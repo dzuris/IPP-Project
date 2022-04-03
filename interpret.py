@@ -1,7 +1,7 @@
 import sys
 
 def print_help_message():
-	print("Help message")
+	print("Help message test")
 
 def check_arguments(arguments):
 	for arg in arguments:
