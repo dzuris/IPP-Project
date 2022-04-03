@@ -1,0 +1,11 @@
+.Ippcode22
+CREATEFRAME
+DEFVAR TF@first_layer
+MOVE TF@first_layer string@world!
+PUSHFRAME
+CREATEFRAME
+DEFVAR TF@second_layer
+MOVE TF@second_layer string@hello
+WRITE TF@second_layer
+POPFRAME
+WRITE TF@first_layer

@@ -1,0 +1,5 @@
+.IPPCODE22
+
+DEFVAR GF@help_var
+
+MOVE GF@help_var int@-15

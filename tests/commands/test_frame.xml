@@ -1,0 +1,31 @@
+<program language="IPPcode22">
+	<instruction order="1" opcode="CREATEFRAME">
+	</instruction>
+	<instruction order="2" opcode="DEFVAR">
+		<arg1 type="var">TF@first_layer</arg1>
+	</instruction>
+	<instruction order="3" opcode="MOVE">
+		<arg1 type="var">TF@first_layer</arg1>
+		<arg2 type="string">world!</arg2>
+	</instruction>
+	<instruction order="4" opcode="PUSHFRAME">
+	</instruction>
+	<instruction order="5" opcode="CREATEFRAME">
+	</instruction>
+	<instruction order="6" opcode="DEFVAR">
+		<arg1 type="var">TF@second_layer</arg1>
+	</instruction>
+	<instruction order="7" opcode="MOVE">
+		<arg1 type="var">TF@second_layer</arg1>
+		<arg2 type="string">hello</arg2>
+	</instruction>
+	<instruction order="8" opcode="WRITE">
+		<arg1 type="var">TF@second_layer</arg1>
+	</instruction>
+	<instruction order="9" opcode="POPFRAME">
+	</instruction>
+	<instruction order="10" opcode="WRITE">
+		<arg1 type="var">TF@first_layer</arg1>
+	</instruction>
+</program>
+
