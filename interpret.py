@@ -6,7 +6,7 @@ INPUT_FILE = ''
 ERROR_INVALID_PARAMS_COMBINATION = 10
 
 def print_help_message():
-	print("Help message test")
+	print("Help message")
 
 def check_arguments(arguments):
 	global SOURCE_FILE
