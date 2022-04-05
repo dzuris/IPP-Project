@@ -5,7 +5,11 @@
 # AUTHOR 	:		Adam Dzurilla, xdzuri00
 #-----------------------------------------------------------------------------
 
+# NOTES
+# STDIN = sys.stdin
+
 import sys
+import xml.etree.ElementTree as ET
 
 SOURCE_FILE = ''
 INPUT_FILE = ''
@@ -134,7 +138,10 @@ def main():
 	arguments = sys.argv			# Load arguments into variable
 	arguments.pop(0)				# Remove 'interpret.py' parameter from list
 	check_arguments(arguments)		# Check parameters validation
-	print(SOURCE_FILE)
-	print(INPUT_FILE)
+	f = open("test.txt", "r")
+	xml_file = f.read()
+	print(xml_file)
+	#print(SOURCE_FILE)
+	#print(INPUT_FILE)
 
 main()
