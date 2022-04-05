@@ -7,19 +7,15 @@
 
 # NOTES
 # STDIN = sys.stdin
-# TEST GITHUB 1
 
 import sys
 import xml.etree.ElementTree as ET
-
-SOURCE_FILE = ''
-INPUT_FILE = ''
 
 ERROR_INVALID_PARAMS_COMBINATION = 10
 ERROR_OPEN_INPUT_FILE = 11
 ERROR_OPEN_OUTPUT_FILE = 12
 ERROR_XML_NOT_WELL_FORMED = 31
-ERROR_UNEXPECTED_XML_STRUCTURE = 32
+ERROR_XML_UNEXPECTED_STRUCTURE = 32
 ERROR_SEMANTIC_CONTROL = 52			# Using of undefined label, variable redefinition
 ERROR_WRONG_OPERANDS = 53			# Wrong operands types
 ERROR_NON_EXISTENT_VARIABLE = 54	# frame exists but variable don't
@@ -29,10 +25,19 @@ ERROR_WRONG_OPERAND_VALUE = 57		# e.g. dividing by zero, wrong exit return
 ERROR_WORKING_WITH_STRING = 58
 ERROR_INTERNAL = 99
 
+def print_error_message(message, error_code):
+	"""
+	Function prints error message on stderr (Standard error output)
+	:param message:		Gets message which will be printed on stderr
+	:param error_code:	Function exits with this error_code
+	"""
+	sys.stderr.write('ERROR: ' + message + '\n')
+	exit(error_code)
+
 def print_help_message():
 	"""
-		This function prints help message for user
-		It should make program easier to use
+	This function prints help message for user
+	It should make program easier to use
 	"""
 	print("Usage: python3.8 interpret.py [OPTIONS] <STDIN")
 	print("Options:")
@@ -52,7 +57,7 @@ def print_help_message():
 
 class Instruction:
 	"""
-		Class store instruction variables
+	Class store instruction variables
 	"""
 	def __init__(self, order, opcode, arguments):
 		self.order = order
@@ -61,7 +66,7 @@ class Instruction:
 
 class Argument:
 	"""
-		Class store argument values
+	Class store argument values
 	"""
 	def __init__(self, arg_type, value):
 		self.type = arg_type
@@ -69,13 +74,16 @@ class Argument:
 
 class Variable:
 	"""
-		Class store variable value and if is it initialized
+	Class store variable value and if is it initialized
 	"""
 	def __init__(self, value, is_init = False):
 		self.value = value
 		self.isInit = is_init
 
 class Frame:
+	"""
+	Class store variables in list and could manipulate with them
+	"""
 	def __init__(self):
 		self.list = []
 
@@ -113,36 +121,84 @@ def check_arguments(arguments):
 	and exit program with appropriate exit code
 	:param arguments:	List of arguments which are checked in cycle
 	:return:
+		Source file, if it's not choose by parameter then it's read from stdin
+		Input file, if it's not choose by parameter then it's read from stdin
 	"""
-	global SOURCE_FILE
-	global INPUT_FILE
+	source_file = None
+	input_file = None
 	for arg in arguments:
 		if arg == '--help':
 			if len(sys.argv) != 1:
-				sys.stderr.write('--help param can\'t be used with other parameters\n')
-				exit(ERROR_INVALID_PARAMS_COMBINATION)
+				print_error_message('--help param can\'t be used with other parameters', ERROR_INVALID_PARAMS_COMBINATION)
 			else:
 				print_help_message()
 		elif arg[0:9] == '--source=':
-			SOURCE_FILE=arg[9:]
+			source_file=arg[9:]
 		elif arg[0:8] == '--input=':
-			INPUT_FILE=arg[8:]
+			input_file=arg[8:]
 		else:
-			sys.stderr.write('Unknown parameter: ' + arg + '\n')
-			exit(ERROR_INVALID_PARAMS_COMBINATION)
+			message = 'Unknown parameter: ' + arg
+			print_error_message(message, ERROR_INVALID_PARAMS_COMBINATION)
+
+	if source_file is None:
+		source_file = sys.stdin
+	if input_file is None:
+		input_file = sys.stdin
+
+	return source_file, input_file
+
+def load_xml(tree):
+	root = tree.getroot()
+	instructions = []
+	for instruct in root:
+		if instruct.tag != 'instruction':
+			print_error_message('Unexpected element', ERROR_XML_UNEXPECTED_STRUCTURE)
+		arguments = []
+		for arg in instruct:
+			arguments.append(Argument(arg.attrib['type'], arg.text))
+		instructions.append(Instruction(instruct.attrib['order'], instruct.attrib['opcode'], arguments))
+
+	return instructions
 
 def main():
 	"""
 	Main program function
 	:return:
 	"""
-	arguments = sys.argv			# Load arguments into variable
-	arguments.pop(0)				# Remove 'interpret.py' parameter from list
-	check_arguments(arguments)		# Check parameters validation
-	f = open("test.txt", "r")
-	xml_file = f.read()
-	print(xml_file)
-	#print(SOURCE_FILE)
-	#print(INPUT_FILE)
+	arguments = sys.argv										# Load arguments into variable
+	arguments.pop(0)											# Remove 'interpret.py' parameter from list
+	source_file, input_file = check_arguments(arguments)		# Check parameters validation
+	print(source_file)
+	print(input_file)
+
+	tree = None
+	try:
+		tree = ET.parse('test_file_for_outputs.xml')
+	except FileNotFoundError:
+		print_error_message('File was not found', ERROR_OPEN_INPUT_FILE)
+	except PermissionError:
+		print_error_message('Permission denied in opening file', ERROR_OPEN_INPUT_FILE)
+
+	#instructions = load_xml(tree)
+
+	"""for ins in instructions:
+		print('Instruction', ins.order, ins.opcode)
+		for arg in ins.arguments:
+			print(arg.type, arg.value)
+		print()
+
+	root = tree.getroot()
+	print(root.tag, root.attrib, len(root.attrib))
+
+	for child in root:
+		print(child.tag, child.attrib)
+		for arg in child:
+			print(arg.tag, arg.attrib)
+			print(arg.text)
+			print()
+		#print(child.attrib['opcode'])
+
+	print(root[0])
+	"""
 
 main()
