@@ -64,6 +64,9 @@ class Instruction:
 		self.opcode = opcode
 		self.arguments = arguments
 
+	def get_order(self):
+		return self.order
+
 class Argument:
 	"""
 	Class store argument values
@@ -115,6 +118,10 @@ class Stack:
 	def define_tf(self):
 		self.temporary_frame = []
 
+class Label:
+	def __init__(self, name):
+		self.name = name
+
 def check_arguments(arguments):
 	"""
 	Program checks each argument and if there is forbidden combination, then print error message
@@ -148,6 +155,11 @@ def check_arguments(arguments):
 	return source_file, input_file
 
 def load_xml(tree):
+	"""
+	Function gets xml file and iterate through it to get instructions and their arguments
+	:param tree:	tree of xml file
+	:return:	list of instructions
+	"""
 	root = tree.getroot()
 	instructions = []
 	for instruct in root:
@@ -168,37 +180,34 @@ def main():
 	arguments = sys.argv										# Load arguments into variable
 	arguments.pop(0)											# Remove 'interpret.py' parameter from list
 	source_file, input_file = check_arguments(arguments)		# Check parameters validation
-	print(source_file)
-	print(input_file)
 
 	tree = None
 	try:
-		tree = ET.parse('test_file_for_outputs.xml')
+		tree = ET.parse(source_file)
 	except FileNotFoundError:
 		print_error_message('File was not found', ERROR_OPEN_INPUT_FILE)
 	except PermissionError:
 		print_error_message('Permission denied in opening file', ERROR_OPEN_INPUT_FILE)
 
-	#instructions = load_xml(tree)
+	instructions = load_xml(tree)
+	instructions.sort(key=Instruction.get_order)
 
-	"""for ins in instructions:
-		print('Instruction', ins.order, ins.opcode)
+	""" Cycle through instructions to find labels and check their redefinitions """
+	labels = []
+	for i in instructions:
+		if i.opcode.upper() == 'LABEL':
+			label_name = i.arguments[0].value
+			if label_name in labels:
+				print_error_message('Label redefinition', ERROR_SEMANTIC_CONTROL)
+			labels.append(Label(i.arguments[0].value))
+
+
+	"""
+	for ins in instructions:
+		print(ins.order, ins.opcode)
 		for arg in ins.arguments:
 			print(arg.type, arg.value)
 		print()
-
-	root = tree.getroot()
-	print(root.tag, root.attrib, len(root.attrib))
-
-	for child in root:
-		print(child.tag, child.attrib)
-		for arg in child:
-			print(arg.tag, arg.attrib)
-			print(arg.text)
-			print()
-		#print(child.attrib['opcode'])
-
-	print(root[0])
 	"""
 
 main()
