@@ -22,11 +22,13 @@ def check_arguments(arguments):
 			SOURCE_FILE=arg[9:]
 		elif arg[0:8] == '--input=':
 			INPUT_FILE=arg[8:]
+		else:
+			sys.stderr.write('Unknown parameter: ' + arg + '\n')
+			exit(ERROR_INVALID_PARAMS_COMBINATION)
 
 def main():
 	arguments = sys.argv
 	arguments.pop(0)
-	#print('Arguments: ' + str(arguments))
 	check_arguments(arguments)
 	print(SOURCE_FILE)
 	print(INPUT_FILE)
