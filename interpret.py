@@ -94,11 +94,87 @@ class Program:
     def get_labels(self):
         return self.labels
 
+    def call_function(self, function):
+        if function == "MOVE":
+            self.ins_move()
+        elif function == "CREATEFRAME":
+            self.ins_createframe()
+        elif function == "PUSHFRAME":
+            self.ins_pushframe()
+        elif function == "POPFRAME":
+            self.ins_popframe()
+        elif function == "DEFVAR":
+            self.ins_defvar()
+        elif function == "CALL":
+            self.ins_call()
+        elif function == "RETURN":
+            self.ins_return()
+        elif function == "PUSHS":
+            self.ins_pushs()
+        elif function == "POPS":
+            self.ins_pops()
+        elif function == "ADD":
+            self.ins_add()
+        elif function == "SUB":
+            self.ins_sub()
+        elif function == "MUL":
+            self.ins_mul()
+        elif function == "IDIV":
+            self.ins_idiv()
+        elif function == "LT":
+            self.ins_lt()
+        elif function == "GT":
+            self.ins_gt()
+        elif function == "EQ":
+            self.ins_eq()
+        elif function == "AND":
+            self.ins_and()
+        elif function == "OR":
+            self.ins_or()
+        elif function == "NOT":
+            self.ins_not()
+        elif function == "INT2CHAR":
+            self.ins_int2char()
+        elif function == "STRI2INT":
+            self.ins_stri2int()
+        elif function == "READ":
+            self.ins_read()
+        elif function == "WRITE":
+            self.ins_write()
+        elif function == "CONCAT":
+            self.ins_concat()
+        elif function == "STRLEN":
+            self.ins_strlen()
+        elif function == "GETCHAR":
+            self.ins_getchar()
+        elif function == "SETCHAR":
+            self.ins_setchar()
+        elif function == "TYPE":
+            self.ins_type()
+        elif function == "LABEL":
+            self.ins_label()
+        elif function == "JUMP":
+            self.ins_jump()
+        elif function == "JUMPIFEQ":
+            self.ins_jumpifeq()
+        elif function == "JUMPIFNEQ":
+            self.ins_jumpifneq()
+        elif function == "EXIT":
+            self.ins_exit()
+        elif function == "DPRINT":
+            self.ins_dprint()
+        elif function == "BREAK":
+            self.ins_break()
+        else:
+            print_error_message('Unknown instruction', ERROR_XML_UNEXPECTED_STRUCTURE)
+            print('skuska')
+
+    # region Instructions
     def ins_move(self):
-        pass
+        print('ja som move funkcia')
 
     def ins_createframe(self):
-        pass
+        print('ja som createframe funkcia')
 
     def ins_pushframe(self):
         pass
@@ -198,6 +274,7 @@ class Program:
 
     def ins_break(self):
         pass
+    # endregion
 
 
 class Instruction:
@@ -342,9 +419,9 @@ def main():
 	Main program function
 	:return:
 	"""
-    arguments = sys.argv    # Load arguments into variable
-    arguments.pop(0)    # Remove 'interpret.py' parameter from list
-    source_file, input_file = check_arguments(arguments)    # Check parameters validation
+    arguments = sys.argv  # Load arguments into variable
+    arguments.pop(0)  # Remove 'interpret.py' parameter from list
+    source_file, input_file = check_arguments(arguments)  # Check parameters validation
 
     tree = None
     try:
@@ -358,6 +435,8 @@ def main():
 
     my_program = Program()
     load_xml(tree, my_program)
+
+    my_program.call_function('CREATEFRAME')
 
 
 # main function calling
