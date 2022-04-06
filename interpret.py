@@ -5,8 +5,7 @@
 # AUTHOR 	:		Adam Dzurilla, xdzuri00
 # -----------------------------------------------------------------------------
 
-# NOTES
-# STDIN = sys.stdin
+# TODO: Interpretacia
 
 import sys
 import xml.etree.ElementTree as ET
