@@ -94,6 +94,111 @@ class Program:
     def get_labels(self):
         return self.labels
 
+    def ins_move(self):
+        pass
+
+    def ins_createframe(self):
+        pass
+
+    def ins_pushframe(self):
+        pass
+
+    def ins_popframe(self):
+        pass
+
+    def ins_defvar(self):
+        pass
+
+    def ins_call(self):
+        pass
+
+    def ins_return(self):
+        pass
+
+    def ins_pushs(self):
+        pass
+
+    def ins_pops(self):
+        pass
+
+    def ins_add(self):
+        pass
+
+    def ins_sub(self):
+        pass
+
+    def ins_mul(self):
+        pass
+
+    def ins_idiv(self):
+        pass
+
+    def ins_lt(self):
+        pass
+
+    def ins_gt(self):
+        pass
+
+    def ins_eq(self):
+        pass
+
+    def ins_and(self):
+        pass
+
+    def ins_or(self):
+        pass
+
+    def ins_not(self):
+        pass
+
+    def ins_int2char(self):
+        pass
+
+    def ins_stri2int(self):
+        pass
+
+    def ins_read(self):
+        pass
+
+    def ins_write(self):
+        pass
+
+    def ins_concat(self):
+        pass
+
+    def ins_strlen(self):
+        pass
+
+    def ins_getchar(self):
+        pass
+
+    def ins_setchar(self):
+        pass
+
+    def ins_type(self):
+        pass
+
+    def ins_label(self):
+        pass
+
+    def ins_jump(self):
+        pass
+
+    def ins_jumpifeq(self):
+        pass
+
+    def ins_jumpifneq(self):
+        pass
+
+    def ins_exit(self):
+        pass
+
+    def ins_dprint(self):
+        pass
+
+    def ins_break(self):
+        pass
+
 
 class Instruction:
     """
@@ -237,9 +342,9 @@ def main():
 	Main program function
 	:return:
 	"""
-    arguments = sys.argv  # Load arguments into variable
-    arguments.pop(0)  # Remove 'interpret.py' parameter from list
-    source_file, input_file = check_arguments(arguments)  # Check parameters validation
+    arguments = sys.argv    # Load arguments into variable
+    arguments.pop(0)    # Remove 'interpret.py' parameter from list
+    source_file, input_file = check_arguments(arguments)    # Check parameters validation
 
     tree = None
     try:
