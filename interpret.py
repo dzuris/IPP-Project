@@ -167,7 +167,6 @@ class Program:
             self.ins_break()
         else:
             print_error_message('Unknown instruction', ERROR_XML_UNEXPECTED_STRUCTURE)
-            print('skuska')
 
     # region Instructions
     def ins_move(self):
