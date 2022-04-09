@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="READ and math operations test">
+    <instruction order="1" opcode="DEFVAR">
+        <arg1 type="var">GF@a</arg1>
+    </instruction>
+    <instruction order="2" opcode="READ">
+        <arg1 type="var">GF@a</arg1>
+        <arg2 type="type">int</arg2>
+    </instruction>
+    <instruction order="3" opcode="DEFVAR">
+        <arg1 type="var">GF@b</arg1>
+    </instruction>
+    <instruction order="4" opcode="READ">
+        <arg1 type="var">GF@b</arg1>
+        <arg2 type="type">int</arg2>
+    </instruction>
+    <instruction order="5" opcode="DEFVAR">
+        <arg1 type="var">GF@res</arg1>
+    </instruction>
+    <instruction order="6" opcode="ADD">
+        <arg1 type="var">GF@res</arg1>
+        <arg2 type="var">GF@a</arg2>
+        <arg3 type="var">GF@b</arg3>
+    </instruction>
+    <instruction order="7" opcode="WRITE">
+        <arg1 type="var">GF@res</arg1>
+    </instruction>
+    <instruction order="8" opcode="WRITE">
+        <arg1 type="string">\010</arg1>
+    </instruction>
+</program>
