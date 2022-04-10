@@ -7,6 +7,8 @@
 
 # TODO: Documentation: STRI2INT, STRLEN, GETCHAR, SETCHAR, TYPE, EXIT, DPRINT, BREAK
 # TODO: Check help message
+# TODO: Tests: CONCAT, DEFVAR
+# TODO: Variable init_control error return code
 
 import sys
 import xml.etree.ElementTree as ET
@@ -170,21 +172,26 @@ class Variable:
         """
         self.name = name
 
-    def set_type(self, var_type: str):
+    def set_type(self, var_type):
         """
         Sets type by string
         @param var_type: Translate var_type assigned by string into Type
         """
-        if var_type == 'string':
-            self.type = Type.STRING
-        elif var_type == 'int':
-            self.type = Type.INT
-        elif var_type == 'bool':
-            self.type = Type.BOOLEAN
-        elif var_type == 'nil':
-            self.type = Type.NULL
+        if type(var_type) == str:
+            if var_type == 'string':
+                self.type = Type.STRING
+            elif var_type == 'int':
+                self.type = Type.INT
+            elif var_type == 'bool':
+                self.type = Type.BOOLEAN
+            elif var_type == 'nil':
+                self.type = Type.NULL
+            else:
+                print_error_message('Unknown type value: ' + var_type, ERROR_XML_UNEXPECTED_STRUCTURE)
+        elif type(var_type) == Type:
+            self.type = var_type
         else:
-            print_error_message('Unknown type value: ' + var_type, ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message('Program incorrectly proceeds variable type', ERROR_INTERNAL)
 
     def set_value(self, value):
         """
@@ -269,7 +276,7 @@ class Frame:
                 return var
 
         # Raise error if variable is not in the list -> Working with undefined variable
-        print_error_message('Undefined variable: ' + var_name, ERROR_NON_EXISTENT_VARIABLE)
+        print_error_message('Non existent variable: ' + var_name, ERROR_NON_EXISTENT_VARIABLE)
 
     def update_var(self, variable: Variable):
         """
@@ -311,7 +318,7 @@ class Frames:
         @return: Local frame
         """
         if not self.local_frames:
-            print_error_message('No local frame\nClass Frames\nInstruction get_lf', ERROR_NON_EXISTENT_FRAME)
+            print_error_message('Undefined local frame\nClass Frames\nInstruction get_lf', ERROR_NON_EXISTENT_FRAME)
 
         return self.local_frames[-1]
 
@@ -348,7 +355,7 @@ class Frames:
         then pop last element from list of local frames
         """
         if not self.local_frames:
-            print_error_message('No local frame\nInstruction: POPFRAME', ERROR_NON_EXISTENT_FRAME)
+            print_error_message('Undefined local frame\nInstruction: POPFRAME', ERROR_NON_EXISTENT_FRAME)
 
         self.temporary_frame = self.local_frames.pop()
 
@@ -542,8 +549,7 @@ class Program:
             return self.frames.get_tf()
         else:
             # Unknown frame label raises error
-            message = 'Unknown frame opcode: ' + frame_opcode
-            print_error_message(message, ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message('Unknown frame opcode: ' + frame_opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
 
     def get_var(self, argument: Argument) -> Variable:
         """
@@ -693,24 +699,20 @@ class Program:
         """
         The function moves a value from the second argument into the first one
         """
-        # Loads the arguments
-        arg1 = self.get_argument(0)
-        arg2 = self.get_argument(1)
-
-        # Gets a name of the destination
-        dest_name = arg1.value[3:]
+        # Loads dest_var
+        dest_var = self.get_var(self.get_argument(0))
 
         # Checks the existence of the variable
-        if not self.get_frame().contain_var(dest_name):
+        if not self.get_frame().contain_var(dest_var.name):
             print_error_message('Attempt in working with non existent variable', ERROR_NON_EXISTENT_VARIABLE)
 
         # Gets the variable from the second argument
-        var = self.get_var(arg2)
+        var = self.get_var(self.get_argument(1))
         # Control of the initialization
         var.init_control()
 
         # Rewrites the name and then updates the variable in the frame
-        var.set_name(dest_name)
+        var.set_name(dest_var.name)
         self.get_frame().update_var(var)
 
     def ins_createframe(self):
@@ -737,17 +739,11 @@ class Program:
         """
         Defines new variable on frame determined by its argument
         """
-        # Loads the argument
-        arg_val = self.get_argument(0).value
-        frame = arg_val[0:2]
-        name = arg_val[3:]
+        # Loads the argument into variable
+        var = self.get_var(self.get_argument(0))
 
-        # Checks redefinition of the variable
-        if self.get_frame().contain_var(name):
-            print_error_message('Redefinition of the variable in push on frame: ' + frame, ERROR_SEMANTIC_CONTROL)
-        else:
-            # Creates a new uninitialized variable
-            self.get_frame().add(Variable(name))
+        # Creates a new uninitialized variable
+        self.get_frame().add(Variable(var.name))
 
     def ins_call(self):
         """
@@ -775,9 +771,7 @@ class Program:
         """
         Pushs the variable on the stack
         """
-        arg1 = self.get_argument(0)
-
-        var = self.get_var(arg1)
+        var = self.get_var(self.get_argument(0))
 
         self.stack.push(var)
 
@@ -785,11 +779,8 @@ class Program:
         """
         Pops the variable from the stack
         """
-        # Loads the first argument
-        arg1 = self.get_argument(0)
-
-        # Translates the argument into a variable
-        var = self.get_var(arg1)
+        # Loads first argument as a variable
+        var = self.get_var(self.get_argument(0))
 
         # Gets the variable from the stack
         var_from_stack = self.stack.pop()
@@ -802,27 +793,19 @@ class Program:
 
     def math_operation(self, operation):
         """
-        The function solves mathematical problem determined by @var operation
+        The function solves mathematical problem determined by @param operation
         @param operation: Mathematical operation
         """
-        # The destination of the argument
-        arg1 = self.get_argument(0)
-
-        # Arguments that contains numbers
-        arg2 = self.get_argument(1)
-        arg3 = self.get_argument(2)
-
-        # Loads arguments into variables
-        # The control of the initialization of the second and third argument
-        var_return = self.get_var(arg1)
-        var_num1 = self.get_var(arg2)
+        # Loads arguments into variables and then controls initializations of the second and third param
+        var_return = self.get_var(self.get_argument(0))
+        var_num1 = self.get_var(self.get_argument(1))
         var_num1.init_control()
-        var_num2 = self.get_var(arg3)
+        var_num2 = self.get_var(self.get_argument(2))
         var_num2.init_control()
 
         # Operation can be called only by INTs types
         if var_num1.type is not Type.INT or var_num2.type is not Type.INT:
-            print_error_message('Wrong type\nFunction: math_operation', ERROR_SEMANTIC_CONTROL)
+            print_error_message('Wrong type\nFunction: math_operation', ERROR_WRONG_OPERANDS)
 
         # Sets the type of the returned variable
         var_return.type = Type.INT
@@ -883,15 +866,12 @@ class Program:
         """
         Loads arguments, performs operation between the second and third and the result will be saved to the first one
         """
-        # Destination variable
-        arg1 = self.get_argument(0)
-
         # Operation variables
         arg2 = self.get_argument(1)
         arg3 = self.get_argument(2)
 
         # Loads first variable, sets properties
-        var = self.get_var(arg1)
+        var = self.get_var(self.get_argument(0))
         var.type = Type.BOOLEAN
         var.is_init = True
 
@@ -915,15 +895,12 @@ class Program:
         The function performs operation between the arguments
         @param op: Operation
         """
-        arg1 = self.get_argument(0)
-        arg2 = self.get_argument(1)
-
         # Sets properties of the result variable
-        var_res = self.get_var(arg1)
+        var_res = self.get_var(self.get_argument(0))
         var_res.type = Type.BOOLEAN
         var_res.is_init = True
 
-        var1 = self.get_var(arg2)
+        var1 = self.get_var(self.get_argument(1))
 
         # Checks the validity of the variable's type
         if var1.type is not Type.BOOLEAN:
@@ -933,8 +910,7 @@ class Program:
         if op == 'and' or op == 'or':
             # AND, OR logical operation
             # Loads a new variable
-            arg3 = self.get_argument(2)
-            var2 = self.get_var(arg3)
+            var2 = self.get_var(self.get_argument(2))
 
             # Checks the type of the new variable
             if var2.type is not Type.BOOLEAN:
@@ -965,11 +941,8 @@ class Program:
         """
         Translates int to the char value
         """
-        arg1 = self.get_argument(0)
-        arg2 = self.get_argument(1)
-
-        end_var = self.get_var(arg1)
-        input_var = self.get_var(arg2)
+        end_var = self.get_var(self.get_argument(0))
+        input_var = self.get_var(self.get_argument(1))
 
         # Transforms int to the char and catches errors TypeError and ValueError
         char = None
@@ -1011,30 +984,28 @@ class Program:
         """
         Reads from input file and then saves the value to the variable
         """
-        arg1 = self.get_argument(0)
-        arg2 = self.get_argument(1)
-
-        var1 = self.get_var(arg1)
+        # Destination variable
+        var1 = self.get_var(self.get_argument(0))
 
         # Gets input value and removes it from the input_lines list
         input_value = self.input_lines[0]
         del self.input_lines[0]
 
-        # Updates the attributes of the variable
-        var1.set_type(arg2.value)
-        var1.set_value(input_value)
-        var1.is_init = True
+        # New variable
+        new_variable = Variable(
+            var1.name,
+            self.get_argument(1).value,
+            input_value
+        )
 
-        self.get_frame().update_var(var1)
+        self.get_frame().update_var(new_variable)
 
     def ins_write(self):
         """
         The function prints the argument to the stdout
         """
-        arg = self.get_argument(0)
-
-        # Gets variable from the argument and then checks its initialization
-        var = self.get_var(arg)
+        # Gets variable from the first argument and then checks its initialization
+        var = self.get_var(self.get_argument(0))
         var.init_control()
 
         # Prints variable
@@ -1054,29 +1025,25 @@ class Program:
         """
         The function concatenates two strings
         """
-        dest = self.get_argument(0)
-
-        arg1 = self.get_argument(1)
-        arg2 = self.get_argument(2)
+        dest_var = self.get_var(self.get_argument(0))
 
         # Checks initialization of the variables
-        var1 = self.get_var(arg1)
+        var1 = self.get_var(self.get_argument(1))
         var1.init_control()
-        var2 = self.get_var(arg2)
+        var2 = self.get_var(self.get_argument(2))
         var2.init_control()
 
         # Checks the types of the variables
         if var1.type is not Type.STRING or var2.type is not Type.STRING:
-            print_error_message('Not allowed type\nInstruction: CONCAT', ERROR_SEMANTIC_CONTROL)
+            print_error_message('Wrong type of the operand\nInstruction: CONCAT', ERROR_WRONG_OPERANDS)
 
-        # Gets the name of the first argument variable
-        dest_name = dest.value[3:]
+        new_variable = Variable(
+            dest_var.name,
+            'string',
+            var1.get_value() + var2.get_value()
+        )
 
-        # Updates the attributes of the variable
-        var1.set_name(dest_name)
-        var1.set_value(var1.get_value() + var2.get_value())
-
-        self.get_frame().update_var(var1)
+        self.get_frame().update_var(new_variable)
 
     def ins_strlen(self):
         var1 = self.get_var(self.get_argument(0))
@@ -1297,8 +1264,7 @@ def check_arguments(arguments):
             # Input file argument
             input_file = arg[8:]
         else:
-            message = 'Unknown parameter: ' + arg
-            print_error_message(message, ERROR_INVALID_PARAMS_COMBINATION)
+            print_error_message('Unknown parameter: ' + arg, ERROR_INVALID_PARAMS_COMBINATION)
 
     if source_file is None:
         source_file = sys.stdin
@@ -1322,7 +1288,7 @@ def load_xml(tree, program: Program):
 
     # Checks root language
     if root.attrib['language'] != 'IPPcode22':
-        print_error_message('Language of source file has to be \'IPPcode22\'', ERROR_XML_NOT_WELL_FORMED)
+        print_error_message('Language of source file has to be \'IPPcode22\'', ERROR_XML_UNEXPECTED_STRUCTURE)
 
     # Cycle through the instructions
     for instruct in root:
