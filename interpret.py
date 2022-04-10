@@ -7,8 +7,6 @@
 
 # TODO: Documentation: STRI2INT, STRLEN, GETCHAR, SETCHAR, TYPE, EXIT, DPRINT, BREAK
 # TODO: Check help message
-# TODO: Tests: CONCAT, DEFVAR
-# TODO: Variable init_control error return code
 
 import sys
 import xml.etree.ElementTree as ET
@@ -224,7 +222,7 @@ class Variable:
         Raises error if variable is not initialized
         """
         if self.is_init is False:
-            print_error_message('Uninitialized variable: ' + self.name, ERROR_SEMANTIC_CONTROL)
+            print_error_message('Missing value in variable: ' + self.name, ERROR_MISSING_VALUE)
 
 
 class Frame:
@@ -473,12 +471,6 @@ class Program:
         for ins in self.instructions:
             ins.order = rewrite_order
             rewrite_order += 1
-
-    def get_instructions(self):
-        """
-        @return: List of instructions
-        """
-        return self.instructions
 
     def get_instruction(self) -> Instruction:
         """
@@ -737,13 +729,16 @@ class Program:
 
     def ins_defvar(self):
         """
-        Defines new variable on frame determined by its argument
+        Defines a new variable on frame determined by its argument
         """
-        # Loads the argument into variable
-        var = self.get_var(self.get_argument(0))
+        # Loads the argument
+        arg = self.get_argument(0)
+
+        # Gets a name from the variable
+        name = arg.value[3:]
 
         # Creates a new uninitialized variable
-        self.get_frame().add(Variable(var.name))
+        self.get_frame().add(Variable(name))
 
     def ins_call(self):
         """
@@ -1204,11 +1199,17 @@ def translate_to_normal_string(source_string: str):
         # Performs exceptions
         if char == '\\':
             # Backslash exception
+            num1 = None
+            num2 = None
+            num3 = None
 
             # Load numbers
-            num1 = source_string[index + 1]
-            num2 = source_string[index + 2]
-            num3 = source_string[index + 3]
+            try:
+                num1 = source_string[index + 1]
+                num2 = source_string[index + 2]
+                num3 = source_string[index + 3]
+            except IndexError:
+                print_error_message('Backslash at the end of the string', ERROR_WORKING_WITH_STRING)
 
             # Checks if chars are numbers
             if not is_char_number(num1) or not is_char_number(num2) or not is_char_number(num3):
@@ -1345,7 +1346,7 @@ def main():
 
     # The interpretation of the program
     while not my_program.is_iteration_at_the_end():
-        my_program.call_function(my_program.get_instructions()[my_program.iteration].opcode)
+        my_program.call_function(my_program.get_instruction().opcode)
 
 
 # The calling of the main function
