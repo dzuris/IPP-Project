@@ -17,7 +17,7 @@
     <instruction order="5" opcode="DEFVAR">
         <arg1 type="var">GF@res</arg1>
     </instruction>
-    <instruction order="6" opcode="ADD">
+    <instruction order="6" opcode="IDIV">
         <arg1 type="var">GF@res</arg1>
         <arg2 type="var">GF@a</arg2>
         <arg3 type="var">GF@b</arg3>

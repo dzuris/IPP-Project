@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="TYPE test">
+    <instruction order="2" opcode="DEFVAR">
+		<arg1 type="var">GF@result</arg1>
+	</instruction>
+    <instruction order="4" opcode="Type">
+		<arg1 type="var">GF@result</arg1>
+		<arg2 type="bool">false</arg2>
+	</instruction>
+	<instruction order="7" opcode="WRITE">
+		<arg1 type="var">GF@result</arg1>
+	</instruction>
+	<instruction order="8" opcode="WRITE">
+		<arg1 type="string">\010</arg1>
+	</instruction>
+</program>

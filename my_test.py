@@ -1,1 +1,1 @@
-print(False < True)
+print(len('ahoj'))
