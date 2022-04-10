@@ -356,6 +356,7 @@ class Stack:
     """
     The stack contains list of undefined type as its attribute
     """
+
     def __init__(self):
         self.list = []
 
