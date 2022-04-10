@@ -6,13 +6,14 @@
 # -----------------------------------------------------------------------------
 
 # TODO: Documentation: STRI2INT, STRLEN, GETCHAR, SETCHAR, TYPE, EXIT, DPRINT, BREAK
-# TODO: Help message
+# TODO: Check help message
 
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
 
 # region ERROR_CODES
+NO_ERROR = 0
 ERROR_INVALID_PARAMS_COMBINATION = 10
 ERROR_OPEN_INPUT_FILE = 11
 ERROR_OPEN_OUTPUT_FILE = 12
@@ -45,21 +46,38 @@ def print_help_message():
     """
 	The function prints help message
 	"""
-    print("Usage: python3.8 interpret.py [OPTIONS] <STDIN")
+    print("Usage:")
+    print("\tpython3.8 interpret.py [OPTIONS] <OPTIONAL_STDIN")
+    print()
     print("Options:")
-    print("\t--help\t\tDisplay this message")
+    print("\t--help\t\t\tDisplay this message")
     print("\t--source=FILE\t\tSet source file")
     print("\t--input=FILE\t\tSet input file")
     print()
     print("Exit status:")
     print("\t0\t\tOK,")
+
     print("\t10\t\tInvalid parameters combination,")
-    print("\t11\t\tError in opening input file")
-    print("\t12\t\tError open output file")
-    print("\t99\t\tError internal (e.g. memory allocation")
+    print("\t11\t\tError in opening input file,")
+    print("\t12\t\tError open output file,")
+
+    print("\t31\t\tXml file is not well formed,")
+    print("\t32\t\tUnexpected structure of the xml file,")
+
+    print("\t52\t\tSemantic error,")
+    print("\t53\t\tWrong operands types,")
+    print("\t54\t\tWorking with non existent variable,")
+    print("\t55\t\tWorking with non existent frame,")
+    print("\t56\t\tMissing value,")
+    print("\t57\t\tWrong operand value,")
+    print("\t58\t\tString error,")
+
+    print("\t99\t\tError internal (e.g. memory allocation, program proceeds values wrongly and later occurred error)")
     print()
     print("This is help message for program \"interpret.py\"")
     print("For full documentation see: readme2.md")
+
+    exit(NO_ERROR)
 
 
 class Type(Enum):
