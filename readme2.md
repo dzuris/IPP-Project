@@ -1,10 +1,11 @@
 Implementační dokumentace k 2. úloze do IPP 2021/2022  
 Jméno a příjmení: Adam Dzurilla  
 Login: xdzuri00
-
+-----------------------------------------------------------------------------------------------------------------------
 # Interpreter
-File: `interpret.py`
-
+File: `interpret.py`  
+Program for interpreting XML file
+-----------------------------------------------------------------------------------------------------------------------
 ### About
 
 The program gets the xml file in source_file which is assigned by parameter --source or if this parameter is not 
@@ -21,6 +22,7 @@ file (closer description [Program class](#Program-class)). After creating Progra
 instructions from the loaded xml tree into Program class. When everything is loaded program starts iterate (closer 
 description [Program iteration](#Program-iteration)).
 
+-----------------------------------------------------------------------------------------------------------------------
 ## Classes
 
 The program uses various classes for interpretation, the classes:
@@ -37,6 +39,7 @@ for working with them
 is by POP functions
 - **Program** - Main class of the program (closer description [Program class](#Program-class))
 
+-----------------------------------------------------------------------------------------------------------------------
 ## Program class
 
 Main class of the program contains variables for program iteration, number of proceeded functions, lists for 
@@ -45,12 +48,26 @@ Program performs functions by own functions which are called by their opcode fro
 contains more functions for working with labels, instructions, arguments, frames, variables and functions for checking 
 if program ended iterations and function for comparing arguments.
 
+-----------------------------------------------------------------------------------------------------------------------
 ## Program iteration
 
-Program iteration starts at position zero. Instructions are performed by order number one by one in order, only call, 
-return and jump functions can 
+### Loading instructions
+At the beginning program loads instructions into list. When the program is loading instructions, it's checking their 
+order validity (can't be duplicate or negative number). Then sort instructions by their order and rewrite their
+orders from one and every order of the every next instruction is incremented by one.
 
-### Author
+### Calling instructions
+Program iteration starts at position zero (Instruction with order 1). Instructions are performed by order number 
+one by one in order, only call, return and jump functions can change the iteration number in another way (by jump). 
+When program reaches the end of the instructions, the iteration is over, and it's ended with return 
+code 0 (if everything ended without error).
+
+### Errors
+When program is running functions are build in way that they can recognize errors and when error occurs, the function
+prints error message and exit program with return code of the error.
+
+-----------------------------------------------------------------------------------------------------------------------
+## Author
 
 Adam Dzurilla  
 xdzuri00
