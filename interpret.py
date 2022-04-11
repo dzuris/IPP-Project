@@ -401,6 +401,201 @@ class Stack:
             # Emptiness raises error
             print_error_message('Pop from empty stack', ERROR_MISSING_VALUE)
 
+    def clear(self):
+        while self.list:
+            self.pop()
+
+
+def math_operation(name, operand1: Variable, operand2: Variable, operation: str) -> Variable:
+    """
+    Calculates math problem
+    @param name: Name of the result variable
+    @param operand1: First operand
+    @param operand2: Second operand
+    @param operation: Mathematical operation
+    @return: Int variable with result
+    """
+    operand1.init_control()
+    operand2.init_control()
+    # Operation can be called only by INTs types
+    if operand1.type is not Type.INT or operand2.type is not Type.INT:
+        print_error_message('Wrong type\nFunction: math_operation', ERROR_WRONG_OPERANDS)
+
+    # Process mathematical operation
+    result = 0
+    if operation == '+':
+        # Addition
+        result = operand1.get_value() + operand2.get_value()
+    elif operation == '-':
+        # Substitution
+        result = operand1.get_value() - operand2.get_value()
+    elif operation == '*':
+        # Multiplication
+        result = operand1.get_value() * operand2.get_value()
+    elif operation == '//':
+        # Division
+        if operand2.get_value() == 0:
+            print_error_message('Division by zero', ERROR_WRONG_OPERAND_VALUE)
+
+        result = operand1.get_value() // operand2.get_value()
+    else:
+        # Unknown operator raises error
+        print_error_message('Wrong operation\nFunction: math_operation', ERROR_INTERNAL)
+
+    return Variable(name, Type.INT, result)
+
+
+def vars_compare(var1, var2, operation) -> bool:
+    """
+    The function compares two variables
+    @param var1:        First variable
+    @param var2:        Second variable
+    @param operation:   Operation e.g. EQ, NEQ, LT, GT
+    @return:            The veracity of the operation
+    """
+    # Checks initializations
+    var1.init_control()
+    var2.init_control()
+
+    # Checks type compatibility
+    if var1.type != var2.type:
+        print_error_message(
+            'Different types in comparison\nFunction: arguments_comparison',
+            ERROR_WRONG_OPERANDS
+        )
+
+    # Proceed operation between arguments
+    if operation == '==':
+        # Equalisation
+        return True if var1.value == var2.value else False
+    elif operation == '!=':
+        # Not equalisation
+        return True if var1.value != var2.value else False
+    elif operation == '>':
+        # Less than
+        return True if var1.value > var2.value else False
+    elif operation == '<':
+        # Greater than
+        return True if var1.value < var2.value else False
+    else:
+        # Unknown operator raises error
+        print_error_message('Unknown operator\nFunction: arguments_comparison', ERROR_INTERNAL)
+
+
+def lt_gt_eq(name, var1: Variable, var2: Variable, op: str) -> Variable:
+    """
+    Logical expression LT, GT, EQ
+    @param name:    Name of the result variable
+    @param var1:    First variable
+    @param var2:    Second variable
+    @param op:      Logical operation
+    @return:        Boolean variable with result
+    """
+    # Initialization control
+    var1.init_control()
+    var2.init_control()
+
+    # Gets a result
+    result_value = True if vars_compare(var1, var2, op) else False
+
+    # Creates a result variable
+    result_var = Variable(name, Type.BOOLEAN, result_value)
+
+    return result_var
+
+
+def and_or_not(name, var1: Variable, var2, op) -> Variable:
+    """
+    Logical operations AND, OR, NOT
+    @param name:    Name of the result variable
+    @param var1:    First variable
+    @param var2:    Second variable or None in NOT function
+    @param op:      Logical operation
+    @return:        Boolean variable with result
+    """
+    var1.init_control()
+
+    # Checks the validity of the variable's type
+    if var1.type is not Type.BOOLEAN:
+        print_error_message('Wrong operands types\nInstruction: ' + op.upper(), ERROR_WRONG_OPERANDS)
+
+    # Performs logical operation
+    if op == 'and' or op == 'or':
+        var2.init_control()
+
+        # Checks the type of the new variable
+        if var2.type is not Type.BOOLEAN:
+            print_error_message('Wrong operands types\nInstruction: ' + op.upper(), ERROR_WRONG_OPERANDS)
+
+        if op == 'and':
+            # AND
+            result_value = var1.value and var2.value
+        else:
+            # OR
+            result_value = var1.value or var2.value
+    else:
+        # NOT
+        result_value = not var1.value
+
+    return Variable(name, Type.BOOLEAN, result_value)
+
+
+def int2char(name, var1: Variable) -> Variable:
+    """
+    Translates integer to char
+    @param name:    Name of the result variable
+    @param var1:    Integer variable
+    @return:        String variable with result
+    """
+    var1.init_control()
+
+    # Variable has to be integer
+    if var1.type is not Type.INT:
+        print_error_message('Wrong operands types\nFunction: INT2CHAR', ERROR_WRONG_OPERANDS)
+
+    # Transforms int to the char and catches errors TypeError and ValueError
+    char = None
+    try:
+        char = chr(var1.value)
+    except TypeError:
+        print_error_message('Wrong type input\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
+    except ValueError:
+        print_error_message('Value error\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
+
+    # Creates a return variable
+    result_var = Variable(name, Type.STRING, char)
+
+    return result_var
+
+
+def stri2int(name, var_string: Variable, var_int: Variable) -> Variable:
+    """
+    Gets ordinal value of char at the string position
+    @param name:        Name of the result variable
+    @param var_string:  String variable
+    @param var_int:     Position
+    @return:            Int variable with result
+    """
+    # Initialization controls
+    var_string.init_control()
+    var_int.init_control()
+
+    # Checks the types validity
+    if var_string.type is not Type.STRING or var_int.type is not Type.INT:
+        print_error_message('Incompatible types\nFunction: STRI2INT', ERROR_WRONG_OPERANDS)
+
+    # Checks the index validity
+    if len(var_string.value) <= var_int.value:
+        print_error_message('Index outside string\nFunction: STRI2INT', ERROR_WORKING_WITH_STRING)
+
+    # Gets ordinal value of a char at the position
+    result_value = ord(var_string.value[var_int.value])
+
+    # Creates a result variable
+    result_var = Variable(name, Type.INT, result_value)
+
+    return result_var
+
 
 class Program:
     """
@@ -469,8 +664,11 @@ class Program:
                               'INT2CHAR', 'STRI2INT', 'READ', 'WRITE', 'CONCAT', 'STRLEN', 'GETCHAR', 'SETCHAR',
                               'TYPE', 'LABEL', 'JUMP', 'JUMPIFEQ', 'JUMPIFNEQ', 'EXIT', 'DPRINT', 'BREAK']
 
+        valid_instructions_extension = ['CLEARS', 'ADDS', 'SUBS', 'MULS', 'IDIVS', 'LTS', 'GTS', 'EQS', 'ANDS',
+                                        'ORS', 'NOTS', 'INT2CHARS', 'STRI2INTS', 'JUMPIFEQS', 'JUMPIFNEQS']
+
         # Check OPCODE validity
-        if instruction.opcode not in valid_instructions:
+        if instruction.opcode not in valid_instructions or instruction.opcode not in valid_instructions_extension:
             print_error_message('Invalid instruction opcode: ' + instruction.opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
 
         # Check ORDER duplication validity
@@ -566,43 +764,6 @@ class Program:
         @return: The veracity of the function
         """
         return self.iteration == len(self.instructions)
-
-    def args_compare(self, arg1, arg2, operation):
-        """
-        The function compares two arguments
-        @param arg1:        First argument
-        @param arg2:        Second argument
-        @param operation:   Operation e.g. EQ, NEQ, LT, GT
-        """
-        # Loads arguments into variables and check their initializations
-        var1 = self.get_var(arg1)
-        var1.init_control()
-        var2 = self.get_var(arg2)
-        var2.init_control()
-
-        # Checks type compatibility
-        if var1.type != var2.type:
-            print_error_message(
-                'Different types in comparison\nFunction: arguments_comparison',
-                ERROR_WRONG_OPERANDS
-            )
-
-        # Proceed operation between arguments
-        if operation == '==':
-            # Equalisation
-            return True if var1.value == var2.value else False
-        elif operation == '!=':
-            # Not equalisation
-            return True if var1.value != var2.value else False
-        elif operation == '>':
-            # Less than
-            return True if var1.value > var2.value else False
-        elif operation == '<':
-            # Greater than
-            return True if var1.value < var2.value else False
-        else:
-            # Unknown operator raises error
-            print_error_message('Unknown operator\nFunction: arguments_comparison', ERROR_INTERNAL)
 
     def call_function(self, function_opcode: str):
         """
@@ -765,9 +926,14 @@ class Program:
         """
         Pushs the variable on the stack
         """
-        var = self.get_var(self.get_argument(0))
+        arg = self.get_argument(0)
 
-        self.stack.push(var)
+        if arg.type == 'label':
+            label = self.get_label(arg.value)
+            self.stack.push(label)
+        else:
+            var = self.get_var(arg)
+            self.stack.push(var)
 
     def ins_pops(self):
         """
@@ -785,201 +951,155 @@ class Program:
         # Updates the variable on the frame
         self.get_frame().update_var(var_from_stack)
 
-    def math_operation(self, operation):
-        """
-        The function solves mathematical problem determined by @param operation
-        @param operation: Mathematical operation
-        """
-        # Loads arguments into variables and then controls initializations of the second and third param
-        var_return = self.get_var(self.get_argument(0))
-        var_num1 = self.get_var(self.get_argument(1))
-        var_num1.init_control()
-        var_num2 = self.get_var(self.get_argument(2))
-        var_num2.init_control()
-
-        # Operation can be called only by INTs types
-        if var_num1.type is not Type.INT or var_num2.type is not Type.INT:
-            print_error_message('Wrong type\nFunction: math_operation', ERROR_WRONG_OPERANDS)
-
-        # Sets the type of the returned variable
-        var_return.type = Type.INT
-
-        # Process mathematical operation
-        result = 0
-        if operation == '+':
-            # Addition
-            result = var_num1.get_value() + var_num2.get_value()
-        elif operation == '-':
-            # Substitution
-            result = var_num1.get_value() - var_num2.get_value()
-        elif operation == '*':
-            # Multiplication
-            result = var_num1.get_value() * var_num2.get_value()
-        elif operation == '//':
-            # Division
-            if var_num2.get_value() == 0:
-                print_error_message('Division by zero', ERROR_WRONG_OPERAND_VALUE)
-
-            result = var_num1.get_value() // var_num2.get_value()
-        else:
-            # Unknown operator raises error
-            print_error_message('Wrong operation\nFunction: math_operation', ERROR_INTERNAL)
-
-        # Updates the var attributes
-        var_return.value = result
-        var_return.is_init = True
-
-        # Updates variable
-        self.get_frame().update_var(var_return)
-
     def ins_add(self):
         """
         Addition
         """
-        self.math_operation('+')
+        destination = self.get_var(self.get_argument(0))
+        operand1 = self.get_var(self.get_argument(1))
+        operand2 = self.get_var(self.get_argument(2))
+
+        result_var = math_operation(destination.name, operand1, operand2, '+')
+
+        self.get_frame().update_var(result_var)
 
     def ins_sub(self):
         """
         Substitution
         """
-        self.math_operation('-')
+        destination = self.get_var(self.get_argument(0))
+        operand1 = self.get_var(self.get_argument(1))
+        operand2 = self.get_var(self.get_argument(2))
+
+        result_var = math_operation(destination.name, operand1, operand2, '-')
+
+        self.get_frame().update_var(result_var)
 
     def ins_mul(self):
         """
         Multiplication
         """
-        self.math_operation('*')
+        destination = self.get_var(self.get_argument(0))
+        operand1 = self.get_var(self.get_argument(1))
+        operand2 = self.get_var(self.get_argument(2))
+
+        result_var = math_operation(destination.name, operand1, operand2, '*')
+
+        self.get_frame().update_var(result_var)
 
     def ins_idiv(self):
         """
-        Division
+        INT division
         """
-        self.math_operation('//')
+        destination = self.get_var(self.get_argument(0))
+        operand1 = self.get_var(self.get_argument(1))
+        operand2 = self.get_var(self.get_argument(2))
 
-    def lt_gt_eq(self, op):
-        """
-        Loads arguments, performs operation between the second and third and the result will be saved to the first one
-        """
-        # Operation variables
-        arg2 = self.get_argument(1)
-        arg3 = self.get_argument(2)
+        result_var = math_operation(destination.name, operand1, operand2, '//')
 
-        # Loads first variable, sets properties
-        var = self.get_var(self.get_argument(0))
-        var.type = Type.BOOLEAN
-        var.is_init = True
-
-        # Sets value
-        var.value = True if self.args_compare(arg2, arg3, op) else False
-
-        # Updates the variable in the frame
-        self.get_frame().update_var(var)
+        self.get_frame().update_var(result_var)
 
     def ins_lt(self):
-        self.lt_gt_eq('<')
+        """
+        Less than
+        """
+        var_dest = self.get_var(self.get_argument(0))
+
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
+
+        result_var = lt_gt_eq(var_dest.name, var1, var2, '<')
+
+        self.get_frame().update_var(result_var)
 
     def ins_gt(self):
-        self.lt_gt_eq('>')
+        """
+        Greater than
+        """
+        var_dest = self.get_var(self.get_argument(0))
+
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
+
+        result_var = lt_gt_eq(var_dest.name, var1, var2, '>')
+
+        self.get_frame().update_var(result_var)
 
     def ins_eq(self):
-        self.lt_gt_eq('==')
+        """
+        Equal
+        """
+        var_dest = self.get_var(self.get_argument(0))
 
-    def and_or_not(self, op):
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
+
+        result_var = lt_gt_eq(var_dest.name, var1, var2, '==')
+
+        self.get_frame().update_var(result_var)
+
+    def ins_and(self):
         """
-        The function performs operation between the arguments
-        @param op: Operation
+        AND logical operation
         """
-        # Sets properties of the result variable
-        var_res = self.get_var(self.get_argument(0))
-        var_res.type = Type.BOOLEAN
-        var_res.is_init = True
+        var_dest = self.get_var(self.get_argument(0))
+
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
+
+        result_var = and_or_not(var_dest.name, var1, var2, 'and')
+
+        self.get_frame().update_var(result_var)
+
+    def ins_or(self):
+        """
+        OR logical operation
+        """
+        var_dest = self.get_var(self.get_argument(0))
+
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
+
+        result_var = and_or_not(var_dest.name, var1, var2, 'or')
+
+        self.get_frame().update_var(result_var)
+
+    def ins_not(self):
+        """
+        NOT logical operation
+        """
+        var_dest = self.get_var(self.get_argument(0))
 
         var1 = self.get_var(self.get_argument(1))
 
-        # Checks the validity of the variable's type
-        if var1.type is not Type.BOOLEAN:
-            print_error_message('Wrong operands types\nInstruction: AND or OR or NOT', ERROR_WRONG_OPERANDS)
+        result_var = and_or_not(var_dest.name, var1, None, 'not')
 
-        # Performs logical operation
-        if op == 'and' or op == 'or':
-            # AND, OR logical operation
-            # Loads a new variable
-            var2 = self.get_var(self.get_argument(2))
-
-            # Checks the type of the new variable
-            if var2.type is not Type.BOOLEAN:
-                print_error_message('Wrong operands types\nInstruction: AND or OR', ERROR_WRONG_OPERANDS)
-
-            if op == 'and':
-                # AND
-                var_res.value = var1.value and var2.value
-            else:
-                # OR
-                var_res.value = var1.value or var2.value
-        else:
-            # NOT
-            var_res.value = not var1.value
-
-        self.get_frame().update_var(var_res)
-
-    def ins_and(self):
-        self.and_or_not('and')
-
-    def ins_or(self):
-        self.and_or_not('or')
-
-    def ins_not(self):
-        self.and_or_not('not')
+        self.get_frame().update_var(result_var)
 
     def ins_int2char(self):
         """
         Translates int to the char value
         """
-        end_var = self.get_var(self.get_argument(0))
-        input_var = self.get_var(self.get_argument(1))
+        var_dest = self.get_var(self.get_argument(0))
+        var_int = self.get_var(self.get_argument(1))
 
-        # Transforms int to the char and catches errors TypeError and ValueError
-        char = None
-        try:
-            char = chr(input_var.value)
-        except TypeError:
-            print_error_message('Wrong type input\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
-        except ValueError:
-            print_error_message('Value error\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
+        result_var = int2char(var_dest.name, var_int)
 
-        # Set attributes of the end_var
-        end_var.type = Type.STRING
-        end_var.set_value(char)
-        end_var.is_init = True
-
-        self.get_frame().update_var(end_var)
+        self.get_frame().update_var(result_var)
 
     def ins_stri2int(self):
         """
         Saves ordinal value of char in string at the position to the target variable
         """
-        # Gets a target variable from the parameter
-        var_destination = self.get_var(self.get_argument(0))
+        # Gets a destination variable
+        var_dest = self.get_var(self.get_argument(0))
 
-        # Gets string and int parameters
+        # Gets a string and int parameters
         var_string = self.get_var(self.get_argument(1))
-        var_string.init_control()
         var_int = self.get_var(self.get_argument(2))
-        var_int.init_control()
 
-        # Checks the types validity
-        if var_string.type is not Type.STRING or var_int.type is not Type.INT:
-            print_error_message('Incompatible types\nInstruction: STRI2INT', ERROR_WRONG_OPERANDS)
-
-        # Checks the index validity
-        if len(var_string.value) <= var_int.value:
-            print_error_message('Index outside string\nInstruction: STRI2INT', ERROR_WORKING_WITH_STRING)
-
-        # Gets ordinal value of char at the position
-        result_value = ord(var_string.value[var_int.value])
-
-        # Creates new variable for update
-        result_variable = Variable(var_destination.name, Type.INT, result_value)
+        # Gets a variable for update
+        result_variable = stri2int(var_dest.name, var_string, var_int)
 
         self.get_frame().update_var(result_variable)
 
@@ -1157,25 +1277,24 @@ class Program:
 
         label: Label = self.get_label(arg1.value)
 
-        arg2 = self.get_argument(1)
-        arg3 = self.get_argument(2)
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
 
-        if self.args_compare(arg2, arg3, '=='):
+        if vars_compare(var1, var2, '=='):
             self.iteration = label.order - 1
 
     def ins_jumpifneq(self):
         """
         Jumps to the label if the second and third arguments are not equal
         """
-        instruct = self.get_instruction()
-        arg1 = instruct.arguments[0]
+        arg1 = self.get_argument(0)
 
         label: Label = self.get_label(arg1.value)
 
-        arg2 = instruct.arguments[1]
-        arg3 = instruct.arguments[2]
+        var1 = self.get_var(self.get_argument(1))
+        var2 = self.get_var(self.get_argument(2))
 
-        if self.args_compare(arg2, arg3, '!='):
+        if vars_compare(var1, var2, '!='):
             self.iteration = label.order - 1
 
     def ins_exit(self):
@@ -1209,6 +1328,123 @@ class Program:
         sys.stderr.write('The iteration number: ' + str(self.iteration) + '\n')
         sys.stderr.write('The number of the proceeded functions: ' + str(self.number_of_proceeded_functions) + '\n\n')
         self.frames.print_frames_to_stderr()
+
+    # endregion
+
+    # region Instructions extension
+
+    def ins_clears(self):
+        self.stack.clear()
+
+    def ins_adds(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = math_operation(sym1.name, sym1, sym2, '+')
+
+        self.stack.push(return_var)
+
+    def ins_subs(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = math_operation(sym1.name, sym1, sym2, '-')
+
+        self.stack.push(return_var)
+
+    def ins_muls(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = math_operation(sym1.name, sym1, sym2, '*')
+
+        self.stack.push(return_var)
+
+    def ins_idivs(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = math_operation(sym1.name, sym1, sym2, '//')
+
+        self.stack.push(return_var)
+
+    def ins_lts(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = lt_gt_eq(sym1.name, sym1, sym2, '<')
+
+        self.stack.push(return_var)
+
+    def ins_gts(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = lt_gt_eq(sym1.name, sym1, sym2, '>')
+
+        self.stack.push(return_var)
+
+    def ins_eqs(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = lt_gt_eq(sym1.name, sym1, sym2, '==')
+
+        self.stack.push(return_var)
+
+    def ins_ands(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = and_or_not(sym1.name, sym1, sym2, 'and')
+
+        self.stack.push(return_var)
+
+    def ins_ors(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = and_or_not(sym1.name, sym1, sym2, 'or')
+
+        self.stack.push(return_var)
+
+    def ins_nots(self):
+        sym1 = self.stack.pop()
+
+        return_var = and_or_not(sym1.name, sym1, None, 'not')
+
+        self.stack.push(return_var)
+
+    def ins_int2chars(self):
+        sym1 = self.stack.pop()
+
+        return_var = int2char(sym1.name, sym1)
+
+        self.stack.push(return_var)
+
+    def ins_stri2ints(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+
+        return_var = stri2int(sym1.name, sym1, sym2)
+
+        self.stack.push(return_var)
+
+    def ins_jumpifeqs(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+        label = self.stack.pop()
+
+        if vars_compare(sym1, sym2, '=='):
+            self.iteration = label.order - 1
+
+    def ins_jumpifneqs(self):
+        sym2 = self.stack.pop()
+        sym1 = self.stack.pop()
+        label = self.stack.pop()
+
+        if vars_compare(sym1, sym2, '!='):
+            self.iteration = label.order - 1
 
     # endregion
 
