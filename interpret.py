@@ -5,9 +5,6 @@
 # AUTHOR 	:		Adam Dzurilla, xdzuri00
 # -----------------------------------------------------------------------------
 
-# TODO: Documentation: STRI2INT, STRLEN, GETCHAR, SETCHAR, TYPE, EXIT, DPRINT, BREAK
-# TODO: Check help message
-
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
@@ -57,25 +54,25 @@ def print_help_message():
     print("Exit status:")
     print("\t0\t\tOK,")
 
-    print("\t10\t\tInvalid parameters combination,")
+    print("\t10\t\tInvalid combination of the parameters,")
     print("\t11\t\tError in opening input file,")
-    print("\t12\t\tError open output file,")
+    print("\t12\t\tError in opening output file,")
 
-    print("\t31\t\tXml file is not well formed,")
+    print("\t31\t\tXml file is not well-formed,")
     print("\t32\t\tUnexpected structure of the xml file,")
 
     print("\t52\t\tSemantic error,")
-    print("\t53\t\tWrong operands types,")
+    print("\t53\t\tWrong type of the operand,")
     print("\t54\t\tWorking with non existent variable,")
     print("\t55\t\tWorking with non existent frame,")
     print("\t56\t\tMissing value,")
-    print("\t57\t\tWrong operand value,")
+    print("\t57\t\tWrong value of the operand,")
     print("\t58\t\tString error,")
 
     print("\t99\t\tError internal (e.g. memory allocation, program proceeds values wrongly and later occurred error)")
     print()
-    print("This is help message for program \"interpret.py\"")
-    print("For full documentation see: readme2.md")
+    print("This is help message for the program \"interpret.py\"")
+    print("For the full documentation see: readme2.md")
 
     exit(NO_ERROR)
 
@@ -956,22 +953,31 @@ class Program:
         self.get_frame().update_var(end_var)
 
     def ins_stri2int(self):
+        """
+        Saves ordinal value of char in string at the position to the target variable
+        """
+        # Gets a target variable from the parameter
         var_destination = self.get_var(self.get_argument(0))
 
+        # Gets string and int parameters
         var_string = self.get_var(self.get_argument(1))
         var_string.init_control()
         var_int = self.get_var(self.get_argument(2))
         var_int.init_control()
 
+        # Checks the types validity
         if var_string.type is not Type.STRING or var_int.type is not Type.INT:
             print_error_message('Incompatible types\nInstruction: STRI2INT', ERROR_WRONG_OPERANDS)
 
+        # Checks the index validity
         if len(var_string.value) <= var_int.value:
             print_error_message('Index outside string\nInstruction: STRI2INT', ERROR_WORKING_WITH_STRING)
 
+        # Gets ordinal value of char at the position
         result_value = ord(var_string.value[var_int.value])
 
-        result_variable = Variable(var_destination.name, 'int', result_value)
+        # Creates new variable for update
+        result_variable = Variable(var_destination.name, Type.INT, result_value)
 
         self.get_frame().update_var(result_variable)
 
@@ -1041,68 +1047,93 @@ class Program:
         self.get_frame().update_var(new_variable)
 
     def ins_strlen(self):
+        """
+        Saves length of the string to the target variable
+        """
+        # Loads arguments and checks initialization
         var1 = self.get_var(self.get_argument(0))
         var2 = self.get_var(self.get_argument(1))
         var2.init_control()
 
+        # Checks type validity
         if var2.type is not Type.STRING:
             print_error_message('Wrong operand type\nInstruction: STRLEN', ERROR_WRONG_OPERANDS)
 
+        # Gets a result value
         result_value = len(var2.value)
 
-        result_variable = Variable(var1.name, 'int', result_value)
+        # Creates a result variable
+        result_variable = Variable(var1.name, Type.INT, result_value)
 
         self.get_frame().update_var(result_variable)
 
     def ins_getchar(self):
-        var1 = self.get_var(self.get_argument(0))
-        var2 = self.get_var(self.get_argument(1))
-        var2.init_control()
-        var3 = self.get_var(self.get_argument(2))
-        var3.init_control()
+        """
+        Saves one char to the first argument from string (second argument) at the position (third argument)
+        """
+        # Loads arguments and check their validity
+        var_dest = self.get_var(self.get_argument(0))
+        var_string = self.get_var(self.get_argument(1))
+        var_string.init_control()
+        var_int = self.get_var(self.get_argument(2))
+        var_int.init_control()
 
-        if var2.type is not Type.STRING or var3.type is not Type.INT:
+        # Checks the types of the variables
+        if var_string.type is not Type.STRING or var_int.type is not Type.INT:
             print_error_message('Wrong operand type\nInstruction: GETCHAR', ERROR_WRONG_OPERANDS)
 
-        if len(var2.value) <= var3.value:
+        # Checks index validity
+        if len(var_string.value) <= var_int.value:
             print_error_message('Index outside string\nInstruction: GETCHAR', ERROR_WORKING_WITH_STRING)
 
-        result_value = var2.value[var3.value]
+        # Gets a result value
+        result_value = var_string.value[var_int.value]
 
-        result_variable = Variable(var1.name, 'string', result_value)
+        # Creates a result variable
+        result_variable = Variable(var_dest.name, Type.STRING, result_value)
 
         self.get_frame().update_var(result_variable)
 
     def ins_setchar(self):
-        var1 = self.get_var(self.get_argument(0))
-        var1.init_control()
-        var2 = self.get_var(self.get_argument(1))
-        var2.init_control()
-        var3 = self.get_var(self.get_argument(2))
-        var3.init_control()
+        """
+        Modify string (first argument) at the position (second argument) as new char (third argument)
+        """
+        # Loads arguments and checks the initializations
+        var_dest = self.get_var(self.get_argument(0))
+        var_dest.init_control()
+        var_int = self.get_var(self.get_argument(1))
+        var_int.init_control()
+        var_char = self.get_var(self.get_argument(2))
+        var_char.init_control()
 
-        if var1.type is not Type.STRING or var2.type is not Type.INT or var3.type is not Type.STRING:
+        # Checks the types of the variables
+        if var_dest.type is not Type.STRING or var_int.type is not Type.INT or var_char.type is not Type.STRING:
             print_error_message('Wrong operand type\nInstruction: SETCHAR', ERROR_WRONG_OPERANDS)
 
-        var1.value[var2.value] = var3.value[0]
+        # Rewrite dest string
+        var_dest.value[var_int.value] = var_char.value[0]
 
-        self.get_frame().update_var(var1)
+        self.get_frame().update_var(var_dest)
 
     def ins_type(self):
-        var1 = self.get_var(self.get_argument(0))
-        var2 = self.get_var(self.get_argument(1))
+        """
+        Saves type of the variable (second argument) to the destination variable (first argument)
+        """
+        var_dest = self.get_var(self.get_argument(0))
+        var = self.get_var(self.get_argument(1))
 
+        # Gets a result value by variable type
         result_value = ''
-        if var2.type is Type.STRING:
+        if var.type is Type.STRING:
             result_value = 'string'
-        elif var2.type is Type.INT:
+        elif var.type is Type.INT:
             result_value = 'int'
-        elif var2.type is Type.BOOLEAN:
+        elif var.type is Type.BOOLEAN:
             result_value = 'bool'
-        elif var2.type is Type.NULL:
+        elif var.type is Type.NULL:
             result_value = 'nil'
 
-        result_variable = Variable(var1.name, 'string', result_value)
+        result_variable = Variable(var_dest.name, Type.STRING, result_value)
         self.get_frame().update_var(result_variable)
 
     def ins_label(self):
@@ -1146,21 +1177,33 @@ class Program:
             self.iteration = label.order - 1
 
     def ins_exit(self):
+        """
+        Exit program with return code (first argument)
+        """
         var = self.get_var(self.get_argument(0))
 
+        # Checks the type of the variable
         if var.type is not Type.INT:
             print_error_message('Wrong operand type\nInstruction: EXIT', ERROR_WRONG_OPERANDS)
 
+        # Checks the value of the variable
         if not 0 <= var.value <= 49:
             print_error_message('Exit code outside allowed range\nInstruction: EXIT', ERROR_WRONG_OPERAND_VALUE)
 
+        # Exits program with return code
         exit(var.value)
 
     def ins_dprint(self):
+        """
+        Prints message to the stderr
+        """
         var = self.get_var(self.get_argument(0))
         sys.stderr.write(str(translate_to_normal_string(var.value)) + '\n')
 
     def ins_break(self):
+        """
+        Prints some information to the stderr
+        """
         sys.stderr.write('The iteration number: ' + str(self.iteration) + '\n')
         sys.stderr.write('The number of the proceeded functions: ' + str(self.number_of_proceeded_functions) + '\n\n')
         self.frames.print_frames_to_stderr()
