@@ -386,7 +386,7 @@ class Stack:
     def __init__(self):
         self.list = []
 
-    def push(self, value: Variable):
+    def push(self, value):
         """
         Appends value to the list
         @param value: The value which will be appended
