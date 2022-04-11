@@ -71,6 +71,10 @@ prints error message and exit program with return code of the error.
 
 ### STACK
 
+Program can process stack functions. Stack functions gets operands from stack from last to first. Makes operations
+and then push result value back on the stack. Extension is implemented in [program class](#Program-class) as
+functions. Functions don't get arguments except of jump functions.
+
 -----------------------------------------------------------------------------------------------------------------------
 # Test
 

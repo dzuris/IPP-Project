@@ -386,7 +386,7 @@ class Stack:
     def __init__(self):
         self.list = []
 
-    def push(self, value):
+    def push(self, value: Variable):
         """
         Appends value to the list
         @param value: The value which will be appended
@@ -633,10 +633,12 @@ class Program:
         # Appending the label to the list of labels
         self.labels.append(label)
 
-    def get_label(self, label_name: str):
+    def get_label(self, label_name: str) -> Label:
         """
         Gets a label from the list by name
         If the label with the name does not exist then raises undefined label error
+        @param label_name:  Name of the label which will be returned
+        @return: Label by name
         """
 
         labels = self.labels
@@ -963,12 +965,8 @@ class Program:
         """
         arg = self.get_argument(0)
 
-        if arg.type == 'label':
-            label = self.get_label(arg.value)
-            self.stack.push(label)
-        else:
-            var = self.get_var(arg)
-            self.stack.push(var)
+        var = self.get_var(arg)
+        self.stack.push(var)
 
     def ins_pops(self):
         """
@@ -1472,7 +1470,8 @@ class Program:
     def ins_jumpifeqs(self):
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
-        label = self.stack.pop()
+
+        label: Label = self.get_label(self.get_argument(0).value)
 
         if vars_compare(sym1, sym2, '=='):
             self.iteration = label.order - 1
@@ -1480,7 +1479,8 @@ class Program:
     def ins_jumpifneqs(self):
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
-        label = self.stack.pop()
+
+        label: Label = self.get_label(self.get_argument(0).value)
 
         if vars_compare(sym1, sym2, '!='):
             self.iteration = label.order - 1
