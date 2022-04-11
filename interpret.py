@@ -1,9 +1,11 @@
-# -----------------------------------------------------------------------------
-# PROJECT 	:		Interpreter IPP 2022
-# FILE 		:		interpret.py
-# EMAIL		:		xdzuri00@stud.fit.vutbr.cz
-# AUTHOR 	:		Adam Dzurilla, xdzuri00
-# -----------------------------------------------------------------------------
+"""
+-----------------------------------------------------------------------------
+@project 	:		Interpreter IPP 2022
+@file 		:		interpret.py
+@email		:		xdzuri00@stud.fit.vutbr.cz
+@author 	:		Adam Dzurilla, xdzuri00
+-----------------------------------------------------------------------------
+"""
 
 import sys
 import xml.etree.ElementTree as ET
@@ -431,6 +433,30 @@ class Program:
         # Appending the label to the list of labels
         self.labels.append(label)
 
+    def get_label(self, label_name: str):
+        """
+        Gets a label from the list by name
+        If the label with the name does not exist then raises undefined label error
+        """
+
+        labels = self.labels
+
+        # Cycle through labels
+        for label in labels:
+            if label.name == label_name:
+                return label
+
+        # Label was not found in list of labels
+        print_error_message('Undefined label', ERROR_SEMANTIC_CONTROL)
+
+    def load_labels(self):
+        """
+        Loops through instructions and add labels to the list of labels
+        """
+        for ins in self.instructions:
+            if ins.opcode == 'LABEL':
+                self.add_label(Label(ins.arguments[0].value, ins.order))
+
     def add_instruction(self, instruction):
         """
         Checks instruction validity, then add it to the list of instructions
@@ -455,6 +481,12 @@ class Program:
         # Append the instruction to the list of instructions
         self.instructions.append(instruction)
 
+    def get_instruction(self) -> Instruction:
+        """
+        @return: Instruction by iteration number
+        """
+        return self.instructions[self.iteration]
+
     def sort_instructions(self):
         """
         Sorts instructions by order
@@ -468,12 +500,6 @@ class Program:
         for ins in self.instructions:
             ins.order = rewrite_order
             rewrite_order += 1
-
-    def get_instruction(self) -> Instruction:
-        """
-        @return: Instruction by iteration number
-        """
-        return self.instructions[self.iteration]
 
     def get_argument(self, position) -> Argument:
         """
@@ -490,30 +516,6 @@ class Program:
 
         # Returns the argument at the position
         return instruct.arguments[position]
-
-    def load_labels(self):
-        """
-        Loops through instructions and add labels to the list of labels
-        """
-        for ins in self.instructions:
-            if ins.opcode == 'LABEL':
-                self.add_label(Label(ins.arguments[0].value, ins.order))
-
-    def get_label(self, label_name: str):
-        """
-        Gets a label from the list by name
-        If the label with the name does not exist then raises undefined label error
-        """
-
-        labels = self.labels
-
-        # Cycle through labels
-        for label in labels:
-            if label.name == label_name:
-                return label
-
-        # Label was not found in list of labels
-        print_error_message('Undefined label', ERROR_SEMANTIC_CONTROL)
 
     def get_frame(self, frame_opcode: str = None) -> Frame:
         """
