@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<program language="IPPcode22" name="AND OR NOT test" rc="53 wrong not operand type">
-	<instruction order="1" opcode="DEFVAR">
-		<arg1 type="var">GF@a</arg1>
-	</instruction>
-    <instruction order="2" opcode="DEFVAR">
-		<arg1 type="var">GF@b</arg1>
-	</instruction>
-    <instruction order="3" opcode="MOVE">
-		<arg1 type="var">GF@a</arg1>
-		<arg2 type="bool">true</arg2>
-	</instruction>
-    <instruction order="4" opcode="MOVE">
-		<arg1 type="var">GF@b</arg1>
-		<arg2 type="bool">false</arg2>
-	</instruction>
+<program language="IPPcode22" name="AND OR NOT test">
     <instruction order="5" opcode="DEFVAR">
 		<arg1 type="var">GF@res</arg1>
 	</instruction>
-    <instruction order="6" opcode="NOT">
+    <instruction order="6" opcode="OR">
 		<arg1 type="var">GF@res</arg1>
-        <arg2 type="string">ahoj</arg2>
+        <arg2 type="bool">true</arg2>
+		<arg3 type="bool">false</arg3>
 	</instruction>
     <instruction order="7" opcode="WRITE">
 		<arg1 type="var">GF@res</arg1>

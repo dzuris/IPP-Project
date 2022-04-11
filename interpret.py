@@ -115,7 +115,6 @@ class Instruction:
         self.opcode = opcode
         self.arguments = arguments
         if self.order < 1:
-            # The order controls negative number
             print_error_message('Invalid instruction order number', ERROR_XML_UNEXPECTED_STRUCTURE)
 
     def get_order(self):
@@ -136,7 +135,7 @@ class Argument:
         @param value: Argument's value
         """
         self.type: str = arg_type
-        self.value = '' if value is None else value  # If value is None then assigns empty string
+        self.value = '' if value is None else value
 
 
 class Variable:
@@ -203,7 +202,12 @@ class Variable:
             except ValueError:
                 print_error_message('Trying assign non int value to integer', ERROR_XML_UNEXPECTED_STRUCTURE)
         elif self.type is Type.BOOLEAN:
-            self.value = value == 'true'
+            if type(value) == str:
+                if value != 'true' and value != 'false':
+                    print_error_message('Wrong XML boolean notation', ERROR_XML_UNEXPECTED_STRUCTURE)
+                self.value = value == 'true'
+            else:
+                self.value = value is True
         elif self.type is Type.NULL:
             self.value = None
         else:
@@ -226,7 +230,7 @@ class Variable:
 
 class Frame:
     """
-	The frame contains list of variables as its attribute
+	The frame contains list of variables and functions for working with that list
 	"""
 
     def __init__(self):
@@ -295,7 +299,7 @@ class Frame:
 
 class Frames:
     """
-    The frame contains global_frame, local_frames, local_frame and temporary_frame attributes
+    The structure with frames and functions for working with them
     """
 
     def __init__(self):
@@ -376,7 +380,7 @@ class Frames:
 
 class Stack:
     """
-    The stack contains list of undefined type as its attribute
+    The class for storing entities and functions PUSH and POP for working with them
     """
 
     def __init__(self):
@@ -473,10 +477,10 @@ def vars_compare(var1, var2, operation) -> bool:
         # Not equalisation
         return True if var1.value != var2.value else False
     elif operation == '>':
-        # Less than
+        # Greater than
         return True if var1.value > var2.value else False
     elif operation == '<':
-        # Greater than
+        # Less than
         return True if var1.value < var2.value else False
     else:
         # Unknown operator raises error
@@ -841,6 +845,36 @@ class Program:
             self.ins_dprint()
         elif function_opcode == "BREAK":
             self.ins_break()
+        elif function_opcode == "CLEARS":
+            self.ins_clears()
+        elif function_opcode == "ADDS":
+            self.ins_adds()
+        elif function_opcode == "SUBS":
+            self.ins_subs()
+        elif function_opcode == "MULS":
+            self.ins_muls()
+        elif function_opcode == "IDIVS":
+            self.ins_idivs()
+        elif function_opcode == "LTS":
+            self.ins_lts()
+        elif function_opcode == "GTS":
+            self.ins_gts()
+        elif function_opcode == "EQS":
+            self.ins_eqs()
+        elif function_opcode == "ANDS":
+            self.ins_ands()
+        elif function_opcode == "ORS":
+            self.ins_ors()
+        elif function_opcode == "NOTS":
+            self.ins_nots()
+        elif function_opcode == "INT2CHARS":
+            self.ins_int2chars()
+        elif function_opcode == "STRI2INTS":
+            self.ins_stri2ints()
+        elif function_opcode == "JUMPIFEQS":
+            self.ins_jumpifeqs()
+        elif function_opcode == "JUMPIFNEQS":
+            self.ins_jumpifneqs()
         else:
             # Unknown instruction raises error
             print_error_message('Unknown instruction ' + function_opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
@@ -1224,6 +1258,7 @@ class Program:
         # Loads arguments and checks the initializations
         var_dest = self.get_var(self.get_argument(0))
         var_dest.init_control()
+
         var_int = self.get_var(self.get_argument(1))
         var_int.init_control()
         var_char = self.get_var(self.get_argument(2))
@@ -1234,7 +1269,10 @@ class Program:
             print_error_message('Wrong operand type\nInstruction: SETCHAR', ERROR_WRONG_OPERANDS)
 
         # Rewrite dest string
-        var_dest.value[var_int.value] = var_char.value[0]
+        s = var_dest.value
+        pos = var_int.value
+        char = var_char.value[:1]
+        var_dest.value = s[:pos] + char + s[pos+1:]
 
         self.get_frame().update_var(var_dest)
 

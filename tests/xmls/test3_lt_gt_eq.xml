@@ -3,10 +3,10 @@
 	<instruction order="1" opcode="DEFVAR">
 		<arg1 type="var">GF@res</arg1>
 	</instruction>
-    <instruction order="2" opcode="GT">
+    <instruction order="2" opcode="EQ">
 		<arg1 type="var">GF@res</arg1>
-        <arg1 type="string">hi</arg1>
-        <arg1 type="string">hello</arg1>
+        <arg1 type="int">28</arg1>
+        <arg1 type="int">28</arg1>
 	</instruction>
     <instruction order="3" opcode="WRITE">
 		<arg1 type="var">GF@res</arg1>
