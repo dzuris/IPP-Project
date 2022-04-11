@@ -434,10 +434,11 @@ def math_operation(name, operand1: Variable, operand2: Variable, operation: str)
         result = operand1.get_value() * operand2.get_value()
     elif operation == '//':
         # Division
-        if operand2.get_value() == 0:
+        try:
+            result = operand1.get_value() // operand2.get_value()
+        except ZeroDivisionError:
             print_error_message('Division by zero', ERROR_WRONG_OPERAND_VALUE)
 
-        result = operand1.get_value() // operand2.get_value()
     else:
         # Unknown operator raises error
         print_error_message('Wrong operation\nFunction: math_operation', ERROR_INTERNAL)
@@ -668,7 +669,7 @@ class Program:
                                         'ORS', 'NOTS', 'INT2CHARS', 'STRI2INTS', 'JUMPIFEQS', 'JUMPIFNEQS']
 
         # Check OPCODE validity
-        if instruction.opcode not in valid_instructions or instruction.opcode not in valid_instructions_extension:
+        if instruction.opcode not in valid_instructions and instruction.opcode not in valid_instructions_extension:
             print_error_message('Invalid instruction opcode: ' + instruction.opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
 
         # Check ORDER duplication validity
