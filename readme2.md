@@ -40,7 +40,7 @@ functions for work
 for working with them
 - **Stack** - Stack of undefined type, adding variables to the stack is by PUSH and getting variables from stack 
 is by POP functions
-- **Program** - Main class of the program (closer description [Program class](#Program-class))
+- [**Program**](#Program-class) - Main class of the program
 
 ### Program class
 
@@ -71,7 +71,7 @@ prints error message and exit program with return code of the error.
 
 ### STACK
 
-Program can process stack functions. Stack functions gets operands from stack from last to first. Makes operations
+Program can process stack functions. Stack functions gets operands from the stack from the last to the first. Makes the operations
 and then push result value back on the stack. Extension is implemented in [program class](#Program-class) as
 functions. Functions don't get arguments except of jump functions.
 

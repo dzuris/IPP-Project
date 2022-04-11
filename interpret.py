@@ -1539,19 +1539,6 @@ def translate_to_normal_string(source_string: str):
             num = 100 * int(num1) + 10 * int(num2) + int(num3)
             final += chr(num)
             skip = 3
-        elif char == '&':
-            # LT, GT, AMP exceptions
-            if source_string[index + 1] == 'l':
-                final += '<'
-                skip = 3
-            elif source_string[index + 1] == 'g':
-                final += '>'
-                skip = 3
-            elif source_string[index + 1] == 'a':
-                final += '&'
-                skip = 4
-            else:
-                print_error_message('Unexpected code after ampersand', ERROR_WORKING_WITH_STRING)
         else:
             final += char
 

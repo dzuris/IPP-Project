@@ -11,7 +11,7 @@
         <arg1 type="var">GF@a</arg1>
     </instruction>
     <instruction order="4" opcode="WRITE">
-        <arg1 type="string">\032&lt;not-tag/&gt;\032</arg1>
+        <arg1 type="string">\032&lt;not-tag/&gt;&amp;\032</arg1>
     </instruction>
     <instruction order="5" opcode="WRITE">
         <arg1 type="bool">true</arg1>
