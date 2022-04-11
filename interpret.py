@@ -1170,7 +1170,7 @@ class Program:
         elif var.type is Type.STRING:
             print(translate_to_normal_string(var.value), end='')
         elif var.type is Type.BOOLEAN:
-            if var.value is True:
+            if var.value:
                 print('true', end='')
             else:
                 print('false', end='')
