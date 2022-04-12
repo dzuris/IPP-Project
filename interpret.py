@@ -1356,7 +1356,15 @@ class Program:
         Prints message to the stderr
         """
         var = self.get_var(self.get_argument(0))
-        sys.stderr.write(str(translate_to_normal_string(var.value)) + '\n')
+        var.init_control()
+
+        if var.type is Type.STRING:
+            sys.stderr.write(str(translate_to_normal_string(var.value)) + '\n')
+        elif var.type is Type.INT:
+            sys.stderr.write(str(var.value) + '\n')
+        elif var.type is Type.BOOLEAN:
+            res = 'true' if var.value else 'false'
+            sys.stderr.write(res + '\n')
 
     def ins_break(self):
         """

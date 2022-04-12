@@ -27,37 +27,6 @@
     Results of the parse.php file
 </h1>
 <hr/>
-<?php
-function generate_error_test_head($testName)
-{
-    echo "<p_red>";
-    echo "\t" . $testName;
-    echo "</p_red>";
-}
-
-function generate_expand_code($name, $file)
-{
-    echo "<section>";
-    echo "\t<details class=\"source\">";
-
-    echo "\t\t<summary>";
-    echo "\t\t\t<span>".$name."</span>";
-    echo "\t\t</summary>";
-
-    echo "\t\t<pre>";
-    echo "\t\t\t<code>";
-
-    echo file_get_contents($file);
-
-    echo "\t\t\t</code>";
-    echo "\t\t</pre>";
-
-    echo "\t</detials>";
-    echo "</section>";
-}
-
-generate_error_test_head("Hello");
-generate_expand_code("Expand", "inputf.txt");
-?>
-</body>
+<p_red>	Hello</p_red><section>	<details class="source">		<summary>			<span>Expand</span>		</summary>		<pre>			<code>10
+2			</code>		</pre>	</detials></section></body>
 </html>
