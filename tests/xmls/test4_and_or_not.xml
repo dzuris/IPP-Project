@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="AND OR NOT test">
+    <instruction order="5" opcode="DEFVAR">
+		<arg1 type="var">GF@res</arg1>
+	</instruction>
+    <instruction order="6" opcode="OR">
+		<arg1 type="var">GF@res</arg1>
+        <arg2 type="bool">true</arg2>
+		<arg3 type="bool">false</arg3>
+	</instruction>
+    <instruction order="7" opcode="WRITE">
+		<arg1 type="var">GF@res</arg1>
+	</instruction>
+	<instruction order="8" opcode="WRITE">
+		<arg1 type="string">\010</arg1>
+	</instruction>
+</program>

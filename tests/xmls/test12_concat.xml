@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="CONCAT test">
+    <instruction order="2" opcode="DEFVAR">
+		<arg1 type="var">GF@result</arg1>
+	</instruction>
+    <instruction order="4" opcode="CONCAT">
+		<arg1 type="var">GF@result</arg1>
+		<arg2 type="string">first\032</arg2>
+		<arg3 type="string">second</arg3>
+	</instruction>
+	<instruction order="7" opcode="WRITE">
+		<arg1 type="var">GF@result</arg1>
+	</instruction>
+	<instruction order="8" opcode="WRITE">
+		<arg1 type="string">\010</arg1>
+	</instruction>
+	<instruction order="9" opcode="WRITE">
+		<arg1 type="string">\010Expected: 'first second'\010</arg1>
+	</instruction>
+</program>
