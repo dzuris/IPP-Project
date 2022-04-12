@@ -1,31 +1,65 @@
-<!--
-    @project Testing program
-    @file test.php
-    @email xdzuri00@stud.fit.vutbr.cz
-    @author Adam Dzurilla
--->
-
-
 <!DOCTYPE html>
 <html lang="html5">
 <head>
     <meta charset="UTF-8">
-    <title>Test output file</title>
-    <style>
-        p_red {
-            color: red;
-        }
-
-        p_green {
-            color: green;
-        }
-    </style>
+    <title>Output of the test.php file</title>
 </head>
 <body>
 <h1 style="text-align:center;">
-    Results of the parse.php file
+    Results of the test.php file
 </h1>
 <hr/>
-<p_red>	Hello</p_red><section>	<details class="source">		<summary>			<span>Expand</span>		</summary>		<pre>			<code>10
-2			</code>		</pre>	</detials></section><hr/></body>
+<h2>
+	Head test
+</h2>
+<p>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p>
+		<a style='color: red'>
+			Return code of the test: 41
+		<br>
+		</a>
+		<a style='color: red'>
+			Expected return code: 0
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+Proměnná GF@counter obsahuje 
+Proměnná GF@counter obsahuje a
+Proměnná GF@counter obsahuje aa
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+42 <a><</a>not-tag/> true
+			</pre>
+		</details>
+	</section>
+	<hr/>
+./supplementary-tests/both/error_string_out_of_range.rc<br>./supplementary-tests/both/error_string_out_of_range.src<br>./supplementary-tests/both/read_test.in<br>./supplementary-tests/both/read_test.out<br>./supplementary-tests/both/read_test.rc<br>./supplementary-tests/both/read_test.src<br>./supplementary-tests/both/spec_example.out<br>./supplementary-tests/both/spec_example.rc<br>./supplementary-tests/both/spec_example.src<br>./supplementary-tests/int-only/stack_test.out<br>./supplementary-tests/int-only/stack_test.src<br>./supplementary-tests/int-only/write_test.rc<br>./supplementary-tests/int-only/write_test.src<br>./supplementary-tests/parse-only/read_test.out<br>./supplementary-tests/parse-only/read_test.rc<br>./supplementary-tests/parse-only/read_test.src<br>./supplementary-tests/parse-only/simple_tag.out<br>./supplementary-tests/parse-only/simple_tag.rc<br>./supplementary-tests/parse-only/simple_tag.src<br>./supplementary-tests/parse-only/write_test.out<br>./supplementary-tests/parse-only/write_test.rc<br>./supplementary-tests/parse-only/write_test.src<br>./tests/basics/read_test.src<br>./tests/basics/simple_tag.src<br>./tests/basics/write_test.src<br>Array
+(
+    [0] => error_string_out_of_range
+    [2] => read_test
+    [6] => spec_example
+    [9] => stack_test
+    [11] => write_test
+    [16] => simple_tag
+)
+</body>
 </html>

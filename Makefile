@@ -1,5 +1,6 @@
-CC=python3.8
-FILES=interpret.py
+CC=php8.1
+FILES=test.php
+HELP_MESSAGE_PARAMS=--help
 
-all:
-	$(CC) $(FILES)
+help_message:
+	$(CC) $(FILES) $(HELP_MESSAGE_PARAMS)
