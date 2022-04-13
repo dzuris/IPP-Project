@@ -115,13 +115,17 @@ foreach ($argv as $arg) {
     }
     elseif (str_starts_with($arg, "--parse-script=")) {
         $arg_parserScript = substr($arg, strlen("--parse-script="));
+        if (!file_exists($arg_parserScript))
+            print_error_message("Non existent file for parser", ERROR_NON_EXISTENT_FILE_IN_PARAM);
     }
     elseif (str_starts_with($arg, "--int-script=")) {
         $arg_intScript = substr($arg, strlen("--int-script="));
+        if (!file_exists($arg_intScript))
+            print_error_message("Non existent file for interpreter", ERROR_NON_EXISTENT_FILE_IN_PARAM);
     }
     elseif ($arg == "--parse-only") {
         if (in_array("--int-only", $argv) || pre_string_in_array("--int-script=", $argv)) {
-            print_error_message("Invalid combination of the parameter: --parse-only", ERROR_PARAMETERS);
+            print_error_message("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
         }
         $arg_parseOnly = true;
     }
@@ -131,7 +135,7 @@ foreach ($argv as $arg) {
                 || pre_string_in_array("--parse-script=", $argv)
                 || pre_string_in_array("--jexampath=", $argv)
         ) {
-            print_error_message("Invalid combination of the parameter: --int-only", ERROR_PARAMETERS);
+            print_error_message("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
         }
 
         $arg_intOnly = true;
@@ -160,7 +164,6 @@ class Test {
     private string|bool $yourOut = false;
 
     private int $returnCode = 0;
-    private bool $result = false;
 
     function __construct($pathName) {
         if ($lastBackslash = strrpos($pathName, '/')) {
@@ -189,6 +192,14 @@ class Test {
             print_error_message('Unknown file: '.$fileName, ERROR_INTERN);
     }
 
+    function getPath(): string {
+        return $this->path;
+    }
+
+    function getName(): string {
+        return $this->name;
+    }
+
     function generateMissingFiles() {
         if ($this->fileIn == false) {
             $this->fileIn = $this->generateFile(".in", "");
@@ -208,10 +219,9 @@ class Test {
         $this->yourOut = $this->generateFile(".xml", "");
 
         global $arg_parserScript;
-        $command = 'php8.1 '.$arg_parserScript.' '.$sourceParam.'>'.$this->yourOut;
-        shell_exec($command);
+        $command = 'php8.1 '.$arg_parserScript.' '.$sourceParam.' >'.$this->yourOut.' 2>/dev/null';
 
-        $this->returnCode = intval(shell_exec('echo $?'));
+        exec($command, result_code: $this->returnCode);
     }
 
     function interpretTest() {
@@ -229,14 +239,9 @@ class Test {
         $this->yourOut = $outputFile;
 
         global $arg_intScript;
-        $command = 'python3.8 '.$arg_intScript.' '.$sourceParam.' '.$inputParam.' >'.$outputFile;
-        shell_exec($command);
-        //$rc = shell_exec('echo $?');
-        echo $command."<br>\n";
-        //echo $rc."<br>\n";
+        $command = 'python3.8 '.$arg_intScript.' '.$sourceParam.' '.$inputParam.' >'.$outputFile.' 2>/dev/null';
 
-        //$this->returnCode = shell_exec('echo $?');
-        $this->returnCode = intval(shell_exec('echo $?'));
+        exec($command, result_code: $this->returnCode);
     }
 
     function generateFile($extension, $content): string {
@@ -251,127 +256,140 @@ class Test {
     }
 
     function printTest() {
-        generate_test_head($this->path.$this->name);
+        $this->generate_test_head();
 
-        echo "Src: ".$this->fileSrc."<br>\n";
-        echo "In: ".$this->fileIn."<br>\n";
-        echo "Out: ".$this->fileOut."<br>\n";
-        echo "Rc: ".$this->fileRc."<br>\n";
+        $this->generate_test_result();
 
-        if ($this->fileRc)
-            $expectedRc = intval(file_get_contents($this->fileRc));
-        else
-            $expectedRc = 0;
+        $this->generate_rc_text();
 
-        generate_test_result($this->returnCode == $expectedRc);
+        if ($this->returnCode == 0)
+            $this->generateDiff();
 
-        if ($this->fileRc)
-            generate_rc_text($this->returnCode, $expectedRc);
-        else
-            generate_rc_text($this->returnCode, -1);
-
+        # region Expand codes
         if ($sourceCode = $this->fileSrc)
-            generate_expand_code("Source code", $sourceCode);
+            $this->generate_expand_code("Source code", $sourceCode);
 
-        if ($outputFile = $this->fileOut)
-            generate_expand_code("Expected output", $outputFile);
+        if ($this->returnCode == 0) {
+            if ($outputFile = $this->fileOut)
+                $this->generate_expand_code("Expected output", $outputFile);
 
-        generate_hr();
+            if ($yourOutFile = $this->yourOut)
+                $this->generate_expand_code("Test output", $yourOutFile);
+        }
+        # endregion
+
+        $this->generate_hr();
     }
+
+    // region Generating HTML
+    function generate_test_head() {
+        echo "<h2><a id='".$this->path.$this->name."'>".$this->path.$this->name."</a></h2>\n";
+    }
+
+    function generate_test_result() {
+        $expectedRc = intval(file_get_contents($this->fileRc));
+        $result = $this->returnCode == $expectedRc;
+
+        echo "<p class='result'>\n";
+        echo "\t<a>Test result: </a>\n";
+
+        if ($result) {
+            echo "\t<a style='color: green'>\n";
+            echo "\t\tSUCCESS\n";
+        }
+        else {
+            echo "\t<a style='color: red'>\n";
+            echo "\t\tFAIL\n";
+        }
+
+        echo "\t</a>\n";
+
+        echo "</p>\n";
+    }
+
+    function generate_rc_text() {
+        $rc = $this->returnCode;
+        $expectedRc = intval(file_get_contents($this->fileRc));
+
+        echo "\t<p class='return_code'>\n";
+
+        if ($rc == $expectedRc) {
+            echo "\t\t<a style='color: green'>\n";
+        }
+        else {
+            echo "\t\t<a style='color: red'>\n";
+        }
+
+        echo "\t\t\t"."Return code of the test: ".$rc."\n<br>\n";
+        echo "\t\t\t"."Expected return code: ".$expectedRc."\n<br>\n";
+        echo "\t\t</a>\n";
+
+        echo "\t</p>\n";
+    }
+
+    function generate_expand_code(string $name,string $file)
+    {
+        echo "\t<section>\n";
+        echo "\t\t<details class='source'>\n";
+
+        echo "\t\t\t<summary>\n";
+        echo "\t\t\t\t<span>".$name."</span>\n";
+        echo "\t\t\t</summary>\n";
+
+        echo "\t\t\t<pre><code class='php'>\n";
+
+        $data = file_get_contents($file);
+        $data = str_replace("<", "<a><</a>", $data);
+
+        echo $data."\n";
+        echo "\t\t\t</code></pre>\n";
+
+        echo "\t\t</details>\n";
+        echo "\t</section>\n";
+    }
+
+    function generateDiff() {
+        echo "\t<p class='test_diff'>\n";
+
+        $rcDiff = 0;
+
+        global $arg_parseOnly;
+        global $arg_jexampath;
+        if ($arg_parseOnly) {
+            $diffFile = $this->generateFile("_diff.xml", "");
+            $command = "java -jar ".$arg_jexampath."jexamxml.jar ".
+                $this->fileOut." ".$this->yourOut." ".$diffFile." /D ".$arg_jexampath."options";
+        }
+        else {
+            $diffFile = $this->generateFile("_diff.out", "");
+            $command = "diff ".$this->fileOut." ".$this->yourOut." >".$diffFile;
+        }
+        exec($command, result_code: $rcDiff);
+
+        if ($rcDiff == 0) {
+            echo "\t\t<a style='color: green'>\n";
+            echo "\t\t\tOutput files are identical\n<br>\n";
+        }
+        else {
+            echo "\t\t<a style='color: red'>\n";
+            echo "\t\t\tOutput files are different\n<br>\n";
+        }
+
+        echo "\t\t</a>\n";
+
+        echo "\t</p>\n";
+    }
+
+    function generate_hr() {
+        echo "\t<hr/>\n";
+    }
+
+    // endregion
 }
 
 // FUNCTIONS
-function generate_test_head(string $testName) {
-    echo "<h2>\n";
-    echo "\t".$testName."\n";
-    echo "</h2>\n";
-}
 
-function generate_test_result(bool $result) {
-    echo "<p class='result'>\n";
-    echo "\t<a>Test result: </a>\n";
-
-    if ($result) {
-        echo "\t<a style='color: green'>\n";
-        echo "\t\tSUCCESS\n";
-    }
-    else {
-        echo "\t<a style='color: red'>\n";
-        echo "\t\tFAIL\n";
-    }
-
-    echo "\t</a>\n";
-
-    echo "</p>\n";
-}
-
-function generate_text(string $text, string $tabulators="") {
-    echo $tabulators."\t<a>\n";
-    echo $tabulators."\t\t" . $text."\n";
-    echo $tabulators."\t</a>\n";
-}
-
-function generate_red_text(string $text, string $tabulators="")
-{
-    echo $tabulators."\t<a style='color: red'>\n";
-    echo $tabulators."\t\t" . $text."\n";
-    echo $tabulators."\t<br>\n";
-    echo $tabulators."\t</a>\n";
-}
-
-function generate_green_text(string $text, string $tabulators="")
-{
-    echo $tabulators."\t<a style='color: green'>\n";
-    echo $tabulators."\t\t" . $text."\n";
-    echo $tabulators."\t<br>\n";
-    echo $tabulators."\t</a>\n";
-}
-
-function generate_expand_code(string $name,string $file)
-{
-    echo "\t<section>\n";
-    echo "\t\t<details class=\"source\">\n";
-
-    echo "\t\t\t<summary>\n";
-    echo "\t\t\t\t<span>".$name."</span>\n";
-    echo "\t\t\t</summary>\n";
-
-    echo "\t\t\t<pre>\n";
-
-    $data = file_get_contents($file);
-    $data = str_replace("<", "<a><</a>", $data);
-
-    echo $data."\n";
-    echo "\t\t\t</pre>\n";
-
-    echo "\t\t</details>\n";
-    echo "\t</section>\n";
-}
-
-function generate_rc_text(int $rc,int $expectedRc) {
-    echo "\t<p class='return_code'>\n";
-
-    if ($rc == $expectedRc) {
-        generate_green_text("Return code of the test: ".$rc, "\t");
-        generate_green_text("Expected return code: ".$expectedRc, "\t");
-    }
-    elseif ($expectedRc == -1) {
-        generate_green_text("Return code of the test: ".$rc, "\t");
-        generate_text("Expected return code: NONE\n", "\t");
-    }
-    else {
-        generate_red_text("Return code of the test: ".$rc, "\t");
-        generate_red_text("Expected return code: ".$expectedRc, "\t");
-    }
-
-    echo "\t</p>\n";
-}
-
-function generate_hr() {
-    echo "\t<hr/>\n";
-}
-
-function get_files(string $dirName): array {
+function getFiles(string $dirName): array {
     global $arg_recursive;
     $content = scandir($dirName);
 
@@ -386,7 +404,7 @@ function get_files(string $dirName): array {
         }
 
         if ($arg_recursive && is_dir($dirName.'/'.$file)) {
-            $files2 = get_files($dirName.'/'.$file);
+            $files2 = getFiles($dirName.'/'.$file);
             $files = array_merge($files, $files2);
         }
 
@@ -403,25 +421,72 @@ function get_files(string $dirName): array {
     return $files;
 }
 
-function cleanDirectory() {
-    shell_exec('rm -r '.TESTS_DIRECTORY);
+function generateSideBar(array $tests) {
+    echo "<nav id='sidebar'>\n";
+
+    echo "<h1>Tests</h1>\n";
+
+    echo "<ol>\n";
+
+    foreach ($tests as $test) {
+        $id = $test->getPath().$test->getName();
+        echo "<li><a href='#".$id."'>".$id."</a></li>";
+    }
+
+    echo "</ol>\n";
+
+    echo "</nav>\n";
 }
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us" style="background-color: antiquewhite">
 <head>
     <meta charset="UTF-8">
     <title>Output of the test.php file</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        pre {
+            margin-left: 10px;
+            padding-left: 10px;
+            background-color: whitesmoke;
+        }
+        code {
+            font-family: Arial;
+        }
+        a {
+            font-family: sans-serif;
+        }
+        li {
+            padding: 10px;
+        }
+        #sidebar {
+            height: 100%;
+            width: 300px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: coral;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+        .main {
+            margin-left: 300px;
+            padding: 0px 10px;
+        }
+    </style>
 </head>
-<body>
-<h1 style="text-align:center;">
+<body class="main">
+<h1>
     Results of the test.php file
 </h1>
 <hr/>
 <?php
 
-$files = get_files($arg_testDir);
+$files = getFiles($arg_testDir);
 
 $tests = [];
 
@@ -439,12 +504,6 @@ foreach ($files as $file) {
     $test->setFile($file);
     $tests[$fileName] = $test;
 }
-
-/**
- * Creates directory with temporary files
- */
-//if (!file_exists(TESTS_DIRECTORY))
-    //shell_exec('mkdir '.TESTS_DIRECTORY);
 
 /**
  * Works with tests
@@ -466,14 +525,12 @@ foreach ($tests as $test) {
     $test->printTest();
 }
 
-//$output = shell_exec('cat Makefile');
-//echo $output;
+generateSideBar($tests);
 
 /**
  * Cleans directory with temporary files
  */
 if (!$arg_noClean) {
-    //cleanDirectory();
     foreach ($filesForDelete as $file) {
         shell_exec('rm '.$file);
     }
