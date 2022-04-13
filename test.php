@@ -14,6 +14,9 @@ const ERROR_OPEN_OUTPUT_FILE = 12;
 const ERROR_NON_EXISTENT_FILE_IN_PARAM = 41;    // directory, parser, interpreter, jexamxml
 const ERROR_INTERN = 99; // Internal error
 
+// GLOBAL CONSTANTS
+const TESTS_DIRECTORY = 'directoryTestsXdzuri00/';
+
 // GLOBAL FUNCTIONS
 /**
  * @param string $message Brief error message
@@ -79,12 +82,16 @@ function pre_string_in_array(string $preString, array $array): bool
 // PROGRAM ARGUMENTS
 $arg_testDir = ".";
 $arg_recursive = false;
-$arg_parserScript = "parser.php";
+$arg_parserScript = "parse.php";
 $arg_intScript = "interpret.py";
 $arg_parseOnly = false;
 $arg_intOnly = false;
 $arg_jexampath = "/pub/courses/ipp/jexamxml/";
 $arg_noClean = false;
+
+// GLOBAL VARIABLES
+$order = 1;
+$filesForDelete = [];
 
 // ARGUMENTS LOADING
 $isFirst = true;
@@ -119,9 +126,14 @@ foreach ($argv as $arg) {
         $arg_parseOnly = true;
     }
     elseif ($arg == "--int-only") {
-        if (in_array("--parse-only", $argv) || pre_string_in_array("--parse-script=", $argv)) {
+        if (
+                in_array("--parse-only", $argv)
+                || pre_string_in_array("--parse-script=", $argv)
+                || pre_string_in_array("--jexampath=", $argv)
+        ) {
             print_error_message("Invalid combination of the parameter: --int-only", ERROR_PARAMETERS);
         }
+
         $arg_intOnly = true;
     }
     elseif (str_starts_with($arg, "--jexampath=")) {
@@ -137,90 +149,134 @@ foreach ($argv as $arg) {
 
 // CLASSES
 class Test {
+    private string $path;
     private string $name;
 
-    private bool $fileSrc = false;
-    private bool $fileIn = false;
-    private bool $fileOut = false;
-    private bool $fileRc = false;
+    private string|bool $fileSrc = false;
+    private string|bool $fileIn = false;
+    private string|bool $fileOut = false;
+    private string|bool $fileRc = false;
 
-    private string $testOutput = "inputf.txt";
-    private string $fileXml;
+    private string|bool $yourOut = false;
 
-    private bool $result = false;
     private int $returnCode = 0;
+    private bool $result = false;
 
-    function __construct($name) {
+    function __construct($pathName) {
+        if ($lastBackslash = strrpos($pathName, '/')) {
+            $path = substr($pathName, 0, $lastBackslash+1);
+            $name = substr($pathName, $lastBackslash+1, strlen($pathName) - $lastBackslash);
+        }
+        else {
+            $path = '';
+            $name = $pathName;
+        }
+
+        $this->path = $path;
         $this->name = $name;
-    }
-
-    function getName(): string {
-        return $this->name;
     }
 
     function setFile($fileName) {
         if (str_ends_with($fileName, ".src"))
-            $this->fileSrc = true;
+            $this->fileSrc = $fileName;
         elseif (str_ends_with($fileName, ".in"))
-            $this->fileIn = true;
+            $this->fileIn = $fileName;
         elseif (str_ends_with($fileName, ".out"))
-            $this->fileOut = true;
+            $this->fileOut = $fileName;
         elseif (str_ends_with($fileName, ".rc"))
-            $this->fileRc = true;
+            $this->fileRc = $fileName;
         else
             print_error_message('Unknown file: '.$fileName, ERROR_INTERN);
     }
 
-    function printTest() {
-        generate_test_head($this->name);
+    function generateMissingFiles() {
+        if ($this->fileIn == false) {
+            $this->fileIn = $this->generateFile(".in", "");
+        }
 
-        /*if (!$this->fileSrc || !$this->fileRc || !$this->fileOut) {
-            generate_red_text("Not enough files for test");
-            generate_hr();
+        if ($this->fileRc == false) {
+            $this->fileRc = $this->generateFile(".rc", "0");
+        }
+    }
+
+    function parserTest() {
+        if ($this->fileSrc)
+            $sourceParam = '<'.$this->fileSrc;
+        else
+            $sourceParam = '';
+
+        $this->yourOut = $this->generateFile(".xml", "");
+
+        global $arg_parserScript;
+        $command = 'php8.1 '.$arg_parserScript.' '.$sourceParam.'>'.$this->yourOut;
+        shell_exec($command);
+
+        $this->returnCode = intval(shell_exec('echo $?'));
+    }
+
+    function interpretTest() {
+        if ($this->returnCode != 0)
             return;
-        }*/
 
-        generate_test_result($this->result);
+        if ($this->yourOut == false)
+            $sourceParam = '--source='.$this->fileSrc;
+        else
+            $sourceParam = '--source='.$this->yourOut;
+
+        $inputParam = '--input='.$this->fileIn;
+
+        $outputFile = $this->generateFile(".out2", "");
+        $this->yourOut = $outputFile;
+
+        global $arg_intScript;
+        $command = 'python3.8 '.$arg_intScript.' '.$sourceParam.' '.$inputParam.' >'.$outputFile;
+        shell_exec($command);
+        //$rc = shell_exec('echo $?');
+        echo $command."<br>\n";
+        //echo $rc."<br>\n";
+
+        //$this->returnCode = shell_exec('echo $?');
+        $this->returnCode = intval(shell_exec('echo $?'));
+    }
+
+    function generateFile($extension, $content): string {
+        $fileName = $this->path.$this->name.$extension;
+
+        file_put_contents($fileName, $content);
+
+        global $filesForDelete;
+        $filesForDelete[] = $fileName;
+
+        return $fileName;
+    }
+
+    function printTest() {
+        generate_test_head($this->path.$this->name);
+
+        echo "Src: ".$this->fileSrc."<br>\n";
+        echo "In: ".$this->fileIn."<br>\n";
+        echo "Out: ".$this->fileOut."<br>\n";
+        echo "Rc: ".$this->fileRc."<br>\n";
+
         if ($this->fileRc)
-            generate_rc_text($this->returnCode, intval(file_get_contents($this->name.".rc")));
+            $expectedRc = intval(file_get_contents($this->fileRc));
+        else
+            $expectedRc = 0;
+
+        generate_test_result($this->returnCode == $expectedRc);
+
+        if ($this->fileRc)
+            generate_rc_text($this->returnCode, $expectedRc);
         else
             generate_rc_text($this->returnCode, -1);
 
-        if ($this->fileSrc)
-            generate_expand_code("Source code", $this->name.".src");
+        if ($sourceCode = $this->fileSrc)
+            generate_expand_code("Source code", $sourceCode);
 
-        generate_expand_code("Output", $this->testOutput);
-
-        if ($this->fileOut)
-            generate_expand_code("Expected output", $this->name.".out");
+        if ($outputFile = $this->fileOut)
+            generate_expand_code("Expected output", $outputFile);
 
         generate_hr();
-    }
-
-    function debugPrint() {
-        echo $this->name."\n";
-
-        if ($this->fileSrc)
-            echo "Src: true\n";
-        else
-            echo "Src: false\n";
-
-        if ($this->fileIn)
-            echo "In: true\n";
-        else
-            echo "In: false\n";
-
-        if ($this->fileOut)
-            echo "Out: true\n";
-        else
-            echo "Out: false\n";
-
-        if ($this->fileRc)
-            echo "Rc: true\n";
-        else
-            echo "Rc: false\n";
-
-        echo "\n";
     }
 }
 
@@ -347,10 +403,8 @@ function get_files(string $dirName): array {
     return $files;
 }
 
-function get_filename(string $path): string {
-    $lastDot = strrpos($path, '.');
-
-    return substr($path, 0, $lastDot);
+function cleanDirectory() {
+    shell_exec('rm -r '.TESTS_DIRECTORY);
 }
 
 ?>
@@ -371,25 +425,58 @@ $files = get_files($arg_testDir);
 
 $tests = [];
 
+/**
+ * Transferring files into tests
+ */
 foreach ($files as $file) {
-    $fileName = get_filename($file);
+    $fileName = substr($file, 0, strrpos($file, '.'));
 
-    if (!array_key_exists($fileName, $tests)) {
+    if (!array_key_exists($fileName, $tests))
         $test = new Test($fileName);
-    }
-    else {
+    else
         $test = $tests[$fileName];
-    }
 
     $test->setFile($file);
     $tests[$fileName] = $test;
 }
 
-echo "\n";
+/**
+ * Creates directory with temporary files
+ */
+//if (!file_exists(TESTS_DIRECTORY))
+    //shell_exec('mkdir '.TESTS_DIRECTORY);
 
+/**
+ * Works with tests
+ */
 foreach ($tests as $test) {
+    $test->generateMissingFiles();
+
+    if ($arg_parseOnly) {
+        $test->parserTest();
+    }
+    elseif ($arg_intOnly) {
+        $test->interpretTest();
+    }
+    else {
+        $test->parserTest();
+        $test->interpretTest();
+    }
+
     $test->printTest();
-    //$test->debugPrint();
+}
+
+//$output = shell_exec('cat Makefile');
+//echo $output;
+
+/**
+ * Cleans directory with temporary files
+ */
+if (!$arg_noClean) {
+    //cleanDirectory();
+    foreach ($filesForDelete as $file) {
+        shell_exec('rm '.$file);
+    }
 }
 
 ?>

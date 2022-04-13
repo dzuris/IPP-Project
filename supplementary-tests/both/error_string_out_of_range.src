@@ -1,4 +1,4 @@
 .IPPcode22
-DEFVAR GF@a
+DEFVAR BF@a
 # indexace mimo meze
 GETCHAR GF@a string@a int@10
