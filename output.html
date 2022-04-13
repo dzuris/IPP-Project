@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="html5">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Output of the test.php file</title>
@@ -9,21 +9,67 @@
     Results of the test.php file
 </h1>
 <hr/>
+
 <h2>
-	Head test
+	supplementary-tests/both/error_string_out_of_range
 </h2>
-<p>
+<p class='result'>
 	<a>Test result: </a>
 	<a style='color: red'>
 		FAIL
 	</a>
 </p>
-	<p>
+	<p class='return_code'>
 		<a style='color: red'>
-			Return code of the test: 41
+			Return code of the test: 0
 		<br>
 		</a>
 		<a style='color: red'>
+			Expected return code: 58
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+.IPPcode22
+DEFVAR GF@a
+# indexace mimo meze
+GETCHAR GF@a string@a int@10
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/both/read_test
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: green'>
 			Expected return code: 0
 		<br>
 		</a>
@@ -31,13 +77,26 @@
 	<section>
 		<details class="source">
 			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+.IPPcode22  # nacteni vstupu a vypis
+DEFVAR GF@a
+READ GF@a int
+WRITE GF@a
+WRITE string@\032<a><</a>not-tag/>\032 # řetězec převádíme, aby byl správně uložen do XML elementu
+WRITE bool@true # zapisujeme malými písmeny
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
 				<span>Output</span>
 			</summary>
 			<pre>
-Proměnná GF@counter obsahuje 
-Proměnná GF@counter obsahuje a
-Proměnná GF@counter obsahuje aa
-
+10
+2
 			</pre>
 		</details>
 	</section>
@@ -52,14 +111,429 @@ Proměnná GF@counter obsahuje aa
 		</details>
 	</section>
 	<hr/>
-./supplementary-tests/both/error_string_out_of_range.rc<br>./supplementary-tests/both/error_string_out_of_range.src<br>./supplementary-tests/both/read_test.in<br>./supplementary-tests/both/read_test.out<br>./supplementary-tests/both/read_test.rc<br>./supplementary-tests/both/read_test.src<br>./supplementary-tests/both/spec_example.out<br>./supplementary-tests/both/spec_example.rc<br>./supplementary-tests/both/spec_example.src<br>./supplementary-tests/int-only/stack_test.out<br>./supplementary-tests/int-only/stack_test.src<br>./supplementary-tests/int-only/write_test.rc<br>./supplementary-tests/int-only/write_test.src<br>./supplementary-tests/parse-only/read_test.out<br>./supplementary-tests/parse-only/read_test.rc<br>./supplementary-tests/parse-only/read_test.src<br>./supplementary-tests/parse-only/simple_tag.out<br>./supplementary-tests/parse-only/simple_tag.rc<br>./supplementary-tests/parse-only/simple_tag.src<br>./supplementary-tests/parse-only/write_test.out<br>./supplementary-tests/parse-only/write_test.rc<br>./supplementary-tests/parse-only/write_test.src<br>./tests/basics/read_test.src<br>./tests/basics/simple_tag.src<br>./tests/basics/write_test.src<br>Array
-(
-    [0] => error_string_out_of_range
-    [2] => read_test
-    [6] => spec_example
-    [9] => stack_test
-    [11] => write_test
-    [16] => simple_tag
-)
+<h2>
+	supplementary-tests/both/spec_example
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: green'>
+			Expected return code: 0
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+.IPPcode22
+
+DEFVAR GF@counter
+MOVE GF@counter string@  #Inicializace proměnné na prázdný řetězec
+
+#Jednoduchá iterace, dokud nebude splněna zadaná podmínka
+LABEL while
+JUMPIFEQ end GF@counter string@aaa
+WRITE string@Proměnná\032GF@counter\032obsahuje\032
+WRITE GF@counter
+WRITE string@\010
+CONCAT GF@counter GF@counter string@a
+JUMP while
+
+LABEL end
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+Proměnná GF@counter obsahuje 
+Proměnná GF@counter obsahuje a
+Proměnná GF@counter obsahuje aa
+
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/int-only/stack_test
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a>
+			Expected return code: NONE
+
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22" name="Stack test">
+    <a><</a>instruction order="2" opcode="PUSHS">
+        <a><</a>arg1 type="string">světe<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="4" opcode="PUSHS">
+        <a><</a>arg1 type="int">32<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="6" opcode="PUSHs">
+        <a><</a>arg1 type="string">ahoj<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="7" opcode="DEFVAR">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="8" opcode="DEFVAR">
+        <a><</a>arg1 type="var">GF@space<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="9" opcode="PopS">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="10" opcode="Write">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="13" opcode="POPS">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="17" opcode="INT2CHAR">
+        <a><</a>arg1 type="var">GF@space<a><</a>/arg1>
+        <a><</a>arg2 type="var">GF@val<a><</a>/arg2>
+    <a><</a>/instruction>
+    <a><</a>instruction order="20" opcode="WRITE">
+        <a><</a>arg1 type="var">GF@space<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="30" opcode="POPS">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="40" opcode="WRITE">
+        <a><</a>arg1 type="var">GF@val<a><</a>/arg1>
+    <a><</a>/instruction>
+<a><</a>/program>
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+ahoj světe
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/int-only/write_test
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: red'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: red'>
+			Expected return code: 32
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22" description="duplicitni order">
+    <a><</a>instruction order="-1" opcode="WRITE">
+        <a><</a>arg1 type="int">0<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="1" opcode="WRITE">
+        <a><</a>arg1 type="string">abc<a><</a>/arg1>
+    <a><</a>/instruction>
+<a><</a>/program>
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/parse-only/read_test
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: green'>
+			Expected return code: 0
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+.IPPcode22  # nacteni vstupu a vypis
+DEFVAR GF@a
+READ GF@a int
+WRITE GF@a
+WRITE string@\032<a><</a>not-tag/>\032 # řetězec převádíme, aby byl správně uložen do XML elementu
+WRITE bool@true#zapisujeme malými písmeny
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22">
+    <a><</a>instruction order="1" opcode="DEFVAR">
+        <a><</a>arg1 type="var">GF@a<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="2" opcode="READ">
+        <a><</a>arg1 type="var">GF@a<a><</a>/arg1>
+        <a><</a>arg2 type="type">int<a><</a>/arg2>
+    <a><</a>/instruction>
+    <a><</a>instruction order="3" opcode="WRITE">
+        <a><</a>arg1 type="var">GF@a<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="4" opcode="WRITE">
+        <a><</a>arg1 type="string">\032&lt;not-tag/&gt;\032<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="5" opcode="WRITE">
+        <a><</a>arg1 type="bool">true<a><</a>/arg1>
+    <a><</a>/instruction>
+<a><</a>/program>
+
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/parse-only/simple_tag
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: green'>
+			Expected return code: 0
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+# Ukazka kódu se sémantickou chybou (skript parse.php ale vrací 0 místo 54), která nemá být detekována už v parse.php. Obsahuje příklad elementu bez podelementů, který lze zapsat krátkým i dlouhým způsobem.
+.IPPcode22
+
+CREATEFRAME # příklad instrukce bez operandů, v XML možný zápis delším způsobem
+DEFVAR TF@x
+PUSHFRAME
+CREATEFRAME
+WRITE TF@x  # přístup k nedefinované proměnné, což se v parse.php neodhalí
+POPFRAME # tato instrukce bude pro ilustraci ve výstupním XML zapsána kratším způsobem
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22">
+    <a><</a>instruction order="1" opcode="CREATEFRAME">
+    <a><</a>/instruction>
+    <a><</a>instruction order="2" opcode="DEFVAR">
+        <a><</a>arg1 type="var">TF@x<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="3" opcode="PUSHFRAME">
+    <a><</a>/instruction>
+    <a><</a>instruction order="4" opcode="CREATEFRAME">
+    <a><</a>/instruction>
+    <a><</a>instruction order="5" opcode="WRITE">
+        <a><</a>arg1 type="var">TF@x<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="6" opcode="POPFRAME" />
+<a><</a>/program>
+
+			</pre>
+		</details>
+	</section>
+	<hr/>
+<h2>
+	supplementary-tests/parse-only/write_test
+</h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: red'>
+		FAIL
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0
+		<br>
+		</a>
+		<a style='color: green'>
+			Expected return code: 0
+		<br>
+		</a>
+	</p>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre>
+.IPPcode22
+# WRITE neprovádí za výstupem odřádkování, pokud to není diktováno argumenty
+WRITE int@0
+WRITE string@ábč
+
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Output</span>
+			</summary>
+			<pre>
+10
+2
+			</pre>
+		</details>
+	</section>
+	<section>
+		<details class="source">
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22">
+    <a><</a>instruction order="1" opcode="WRITE">
+        <a><</a>arg1 type="int">0<a><</a>/arg1>
+    <a><</a>/instruction>
+    <a><</a>instruction order="2" opcode="WRITE">
+        <a><</a>arg1 type="string">ábč<a><</a>/arg1>
+    <a><</a>/instruction>
+<a><</a>/program>
+
+			</pre>
+		</details>
+	</section>
+	<hr/>
 </body>
 </html>

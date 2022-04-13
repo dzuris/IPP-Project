@@ -12,6 +12,7 @@ const ERROR_PARAMETERS = 10; // missing parameter or forbidden combination of th
 const ERROR_OPEN_INPUT_FILE = 11;
 const ERROR_OPEN_OUTPUT_FILE = 12;
 const ERROR_NON_EXISTENT_FILE_IN_PARAM = 41;    // directory, parser, interpreter, jexamxml
+const ERROR_INTERN = 99; // Internal error
 
 // GLOBAL FUNCTIONS
 /**
@@ -136,16 +137,94 @@ foreach ($argv as $arg) {
 
 // CLASSES
 class Test {
-    public $name;
-    public $path;
-    public $fileSrc;
-    public $fileIn;
-    public $fileOut;
-    public $fileRc;
+    private string $name;
+
+    private bool $fileSrc = false;
+    private bool $fileIn = false;
+    private bool $fileOut = false;
+    private bool $fileRc = false;
+
+    private string $testOutput = "inputf.txt";
+    private string $fileXml;
+
+    private bool $result = false;
+    private int $returnCode = 0;
+
+    function __construct($name) {
+        $this->name = $name;
+    }
+
+    function getName(): string {
+        return $this->name;
+    }
+
+    function setFile($fileName) {
+        if (str_ends_with($fileName, ".src"))
+            $this->fileSrc = true;
+        elseif (str_ends_with($fileName, ".in"))
+            $this->fileIn = true;
+        elseif (str_ends_with($fileName, ".out"))
+            $this->fileOut = true;
+        elseif (str_ends_with($fileName, ".rc"))
+            $this->fileRc = true;
+        else
+            print_error_message('Unknown file: '.$fileName, ERROR_INTERN);
+    }
+
+    function printTest() {
+        generate_test_head($this->name);
+
+        /*if (!$this->fileSrc || !$this->fileRc || !$this->fileOut) {
+            generate_red_text("Not enough files for test");
+            generate_hr();
+            return;
+        }*/
+
+        generate_test_result($this->result);
+        if ($this->fileRc)
+            generate_rc_text($this->returnCode, intval(file_get_contents($this->name.".rc")));
+        else
+            generate_rc_text($this->returnCode, -1);
+
+        if ($this->fileSrc)
+            generate_expand_code("Source code", $this->name.".src");
+
+        generate_expand_code("Output", $this->testOutput);
+
+        if ($this->fileOut)
+            generate_expand_code("Expected output", $this->name.".out");
+
+        generate_hr();
+    }
+
+    function debugPrint() {
+        echo $this->name."\n";
+
+        if ($this->fileSrc)
+            echo "Src: true\n";
+        else
+            echo "Src: false\n";
+
+        if ($this->fileIn)
+            echo "In: true\n";
+        else
+            echo "In: false\n";
+
+        if ($this->fileOut)
+            echo "Out: true\n";
+        else
+            echo "Out: false\n";
+
+        if ($this->fileRc)
+            echo "Rc: true\n";
+        else
+            echo "Rc: false\n";
+
+        echo "\n";
+    }
 }
 
 // FUNCTIONS
-
 function generate_test_head(string $testName) {
     echo "<h2>\n";
     echo "\t".$testName."\n";
@@ -153,7 +232,7 @@ function generate_test_head(string $testName) {
 }
 
 function generate_test_result(bool $result) {
-    echo "<p>\n";
+    echo "<p class='result'>\n";
     echo "\t<a>Test result: </a>\n";
 
     if ($result) {
@@ -205,7 +284,6 @@ function generate_expand_code(string $name,string $file)
 
     $data = file_get_contents($file);
     $data = str_replace("<", "<a><</a>", $data);
-    //$data = str_replace("&", "<a>&</a>", $data);
 
     echo $data."\n";
     echo "\t\t\t</pre>\n";
@@ -215,11 +293,15 @@ function generate_expand_code(string $name,string $file)
 }
 
 function generate_rc_text(int $rc,int $expectedRc) {
-    echo "\t<p>\n";
+    echo "\t<p class='return_code'>\n";
 
     if ($rc == $expectedRc) {
         generate_green_text("Return code of the test: ".$rc, "\t");
         generate_green_text("Expected return code: ".$expectedRc, "\t");
+    }
+    elseif ($expectedRc == -1) {
+        generate_green_text("Return code of the test: ".$rc, "\t");
+        generate_text("Expected return code: NONE\n", "\t");
     }
     else {
         generate_red_text("Return code of the test: ".$rc, "\t");
@@ -266,15 +348,14 @@ function get_files(string $dirName): array {
 }
 
 function get_filename(string $path): string {
-    $lastBackslash = strrpos($path, '/')+1;
     $lastDot = strrpos($path, '.');
 
-    return substr($path, $lastBackslash, $lastDot - $lastBackslash);
+    return substr($path, 0, $lastDot);
 }
 
 ?>
 <!DOCTYPE html>
-<html lang="html5">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Output of the test.php file</title>
@@ -286,29 +367,30 @@ function get_filename(string $path): string {
 <hr/>
 <?php
 
-generate_test_head("Head test");
-generate_test_result(false);
-generate_rc_text(41, 0);
-
-generate_expand_code("Output", "supplementary-tests/both/spec_example.out");
-generate_expand_code("Expected output", "supplementary-tests/both/read_test.out");
-generate_hr();
-
-//$dir_content = scandir($arg_testDir);
-
 $files = get_files($arg_testDir);
 
-$file_names = [];
+$tests = [];
+
 foreach ($files as $file) {
-    $file_names[] = get_filename($file);
-    echo $file;
-    echo "<br>";
+    $fileName = get_filename($file);
+
+    if (!array_key_exists($fileName, $tests)) {
+        $test = new Test($fileName);
+    }
+    else {
+        $test = $tests[$fileName];
+    }
+
+    $test->setFile($file);
+    $tests[$fileName] = $test;
 }
-$file_names = array_unique($file_names);
 
-print_r($file_names);
+echo "\n";
 
-//listFolderFiles($arg_testDir);
+foreach ($tests as $test) {
+    $test->printTest();
+    //$test->debugPrint();
+}
 
 ?>
 </body>
