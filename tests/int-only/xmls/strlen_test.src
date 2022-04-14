@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<program language="IPPcode22" name="TYPE test">
+<program language="IPPcode22" name="STRLEN test">
     <instruction order="2" opcode="DEFVAR">
 		<arg1 type="var">GF@result</arg1>
 	</instruction>
-    <instruction order="4" opcode="Type">
+    <instruction order="4" opcode="STRLEN">
 		<arg1 type="var">GF@result</arg1>
-		<arg2 type="int">1</arg2>
+		<arg2 type="string">Autooo</arg2>
 	</instruction>
 	<instruction order="7" opcode="WRITE">
 		<arg1 type="var">GF@result</arg1>
-	</instruction>
-	<instruction order="8" opcode="WRITE">
-		<arg1 type="string">\010</arg1>
 	</instruction>
 </program>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<program language="IPPcode22" name="JUMPIFEQS JUMPIFNEQS test">
+<program language="IPPcode22" name="JUMPIFNEQS test">
 	<instruction order="1" opcode="PUSHS">
 		<arg1 type="int">10</arg1>
 	</instruction>
@@ -10,7 +10,7 @@
         <arg1 type="label">end</arg1>
     </instruction>
 	<instruction order="6" opcode="WRITE">
-		<arg1 type="string">not\032jumped\010</arg1>
+		<arg1 type="string">not\032jumped</arg1>
 	</instruction>
 	<instruction order="7" opcode="LABEL">
 		<arg1 type="label">end</arg1>

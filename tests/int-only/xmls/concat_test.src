@@ -11,10 +11,4 @@
 	<instruction order="7" opcode="WRITE">
 		<arg1 type="var">GF@result</arg1>
 	</instruction>
-	<instruction order="8" opcode="WRITE">
-		<arg1 type="string">\010</arg1>
-	</instruction>
-	<instruction order="9" opcode="WRITE">
-		<arg1 type="string">\010Expected: 'first second'\010</arg1>
-	</instruction>
 </program>

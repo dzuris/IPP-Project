@@ -13,7 +13,4 @@
 	<instruction order="6" opcode="WRITE">
 		<arg1 type="var">GF@res</arg1>
 	</instruction>
-	<instruction order="7" opcode="WRITE">
-		<arg1 type="string">\010</arg1>
-	</instruction>
 </program>

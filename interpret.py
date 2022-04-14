@@ -67,7 +67,7 @@ def print_error_message(message, error_code, line):
         error_title = 'WorkingWithString'
     elif error_code == ERROR_INTERNAL:
         error_title = 'Internal'
-        
+
     sys.stderr.write(error_title + '\n')
 
     sys.stderr.write(message + '\n')
