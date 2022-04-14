@@ -8,12 +8,14 @@
             text-align: center;
         }
         pre {
-            margin-left: 10px;
-            padding-left: 10px;
-            background-color: whitesmoke;
+            margin-left: 40px;
         }
         code {
-            font-family: Arial;
+            font-family: monospace;
+        }
+        details {
+            background-color: #e2e2e2;
+            padding: 10px;
         }
         a {
             font-family: sans-serif;
@@ -34,7 +36,7 @@
         }
         .main {
             margin-left: 300px;
-            padding: 0px 10px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -43,7 +45,7 @@
     Results of the test.php file
 </h1>
 <hr/>
-<h2><a id='supplementary-tests/both/error_string_out_of_range'>supplementary-tests/both/error_string_out_of_range</a></h2>
+<h2><a id='tests/parse-only/headers/testHead1'>tests/parse-only/headers/testHead1</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -52,28 +54,26 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 58
+			Return code of the test: 21
 <br>
-			Expected return code: 58
+			Expected return code: 21
 <br>
 		</a>
 	</p>
 	<section>
-		<details class='source'>
+		<details>
 			<summary>
 				<span>Source code</span>
 			</summary>
-			<pre><code class='php'>
-.IPPcode22
-DEFVAR GF@a
-# indexace mimo meze
-GETCHAR GF@a string@a int@10
+			<pre><code class='code'>
+.IPPcode222
+DEFVAR GF@ahoj
 
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='supplementary-tests/both/read_test'>supplementary-tests/both/read_test</a></h2>
+<h2><a id='tests/parse-only/headers/testHead2'>tests/parse-only/headers/testHead2</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -89,48 +89,63 @@ GETCHAR GF@a string@a int@10
 		</a>
 	</p>
 	<p class='test_diff'>
-		<a style='color: green'>
-			Output files are identical
+		<a style='color: red'>
+			Output files are different
 <br>
 		</a>
 	</p>
 	<section>
-		<details class='source'>
+		<details>
 			<summary>
 				<span>Source code</span>
 			</summary>
-			<pre><code class='php'>
-.IPPcode22  # nacteni vstupu a vypis
-DEFVAR GF@a
-READ GF@a int
-WRITE GF@a
-WRITE string@\032<a><</a>not-tag/>\032 # řetězec převádíme, aby byl správně uložen do XML elementu
-WRITE bool@true # zapisujeme malými písmeny
+			<pre><code class='code'>
+.IppCoDe22	# Prvy komentar
+
 			</code></pre>
 		</details>
 	</section>
 	<section>
-		<details class='source'>
-			<summary>
-				<span>Expected output</span>
-			</summary>
-			<pre><code class='php'>
-42 <a><</a>not-tag/> true
-			</code></pre>
-		</details>
-	</section>
-	<section>
-		<details class='source'>
+		<details>
 			<summary>
 				<span>Test output</span>
 			</summary>
-			<pre><code class='php'>
-42 <a><</a>not-tag/> true
+			<pre><code class='code'>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22">
+<a><</a>/program>
+
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='supplementary-tests/both/spec_example'>supplementary-tests/both/spec_example</a></h2>
+<h2><a id='tests/parse-only/headers/testHead3'>tests/parse-only/headers/testHead3</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 21
+<br>
+			Expected return code: 21
+<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/parse-only/headers/testHead4'>tests/parse-only/headers/testHead4</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -146,57 +161,31 @@ WRITE bool@true # zapisujeme malými písmeny
 		</a>
 	</p>
 	<p class='test_diff'>
-		<a style='color: green'>
-			Output files are identical
+		<a style='color: red'>
+			Output files are different
 <br>
 		</a>
 	</p>
 	<section>
-		<details class='source'>
+		<details>
 			<summary>
 				<span>Source code</span>
 			</summary>
-			<pre><code class='php'>
-.IPPcode22
-
-DEFVAR GF@counter
-MOVE GF@counter string@  #Inicializace proměnné na prázdný řetězec
-
-#Jednoduchá iterace, dokud nebude splněna zadaná podmínka
-LABEL while
-JUMPIFEQ end GF@counter string@aaa
-WRITE string@Proměnná\032GF@counter\032obsahuje\032
-WRITE GF@counter
-WRITE string@\010
-CONCAT GF@counter GF@counter string@a
-JUMP while
-
-LABEL end
-			</code></pre>
-		</details>
-	</section>
-	<section>
-		<details class='source'>
-			<summary>
-				<span>Expected output</span>
-			</summary>
-			<pre><code class='php'>
-Proměnná GF@counter obsahuje 
-Proměnná GF@counter obsahuje a
-Proměnná GF@counter obsahuje aa
+			<pre><code class='code'>
+.ippcode22#ahoj
 
 			</code></pre>
 		</details>
 	</section>
 	<section>
-		<details class='source'>
+		<details>
 			<summary>
 				<span>Test output</span>
 			</summary>
-			<pre><code class='php'>
-Proměnná GF@counter obsahuje 
-Proměnná GF@counter obsahuje a
-Proměnná GF@counter obsahuje aa
+			<pre><code class='code'>
+<a><</a>?xml version="1.0" encoding="UTF-8"?>
+<a><</a>program language="IPPcode22">
+<a><</a>/program>
 
 			</code></pre>
 		</details>
@@ -205,7 +194,7 @@ Proměnná GF@counter obsahuje aa
 <nav id='sidebar'>
 <h1>Tests</h1>
 <ol>
-<li><a href='#supplementary-tests/both/error_string_out_of_range'>supplementary-tests/both/error_string_out_of_range</a></li><li><a href='#supplementary-tests/both/read_test'>supplementary-tests/both/read_test</a></li><li><a href='#supplementary-tests/both/spec_example'>supplementary-tests/both/spec_example</a></li></ol>
+<li><a href='#tests/parse-only/headers/testHead1'>tests/parse-only/headers/testHead1</a></li><li><a href='#tests/parse-only/headers/testHead2'>tests/parse-only/headers/testHead2</a></li><li><a href='#tests/parse-only/headers/testHead3'>tests/parse-only/headers/testHead3</a></li><li><a href='#tests/parse-only/headers/testHead4'>tests/parse-only/headers/testHead4</a></li></ol>
 </nav>
 </body>
 </html>

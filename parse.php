@@ -35,6 +35,14 @@
 		echo "Full documentation in file: readme1.md\n";
 	}
 
+	function printErrorMessage($message, $errorCode): void {
+		global $__FILE__;
+		error_log($message);
+		error_log('FILE: parse.php');
+		error_log('');
+		exit($errorCode);
+	}
+
 	/**
 	 * @brief		checkHeader
 	 *						* Function gets header line and remove comments and trim rest whitespaces
@@ -51,8 +59,7 @@
 			}
 		}
 
-		error_log("Invalid or missing header in source code in language IPPcode22");
-		exit(21);
+		printErrorMessage("Invalid or missing header in source code in language IPPcode22", 21);
 	}
 
 	/**
@@ -64,8 +71,7 @@
 	 */
 	function checkArgCount($splitted, $expectedCount) {
 		if (count($splitted) != $expectedCount) {
-			error_log("Syntactic error: Unexpected number of arguments");
-			exit(22);
+			printErrorMessage("Syntactic error: Unexpected number of arguments", 22);
 		}
 	}
 
@@ -109,9 +115,16 @@
 	 * @param		dataType					data type which is checked by function
 	 */
 	function isDataTypeValid($dataType) {
-		if ($dataType != 'int' && $dataType != 'bool' && $dataType != 'string' && $dataType != 'nil' && $dataType != 'LF' && $dataType != 'TF' && $dataType != 'GF') {
-			error_log("Lexical error: Unknown data type");
-			exit(22);
+		if (
+			$dataType != 'int'
+			&& $dataType != 'bool'
+			&& $dataType != 'string'
+			&& $dataType != 'nil'
+			&& $dataType != 'LF'
+			&& $dataType != 'TF'
+			&& $dataType != 'GF'
+		) {
+			printErrorMessage("Lexical error: Unknown data type", 22);
 		} else {
 			return true;
 		}
@@ -196,26 +209,23 @@
 		if ($arg == "--help") {
 			// check if is it only one parameter
 			if ($argc != 2) {
-				error_log("Invalid parameters combination");
-				exit(10);
+				printErrorMessage("Invalid parameters combination", 10);
 			}
 			printHelpMessage();
 			exit(0);
 		}
 		// Parameter for source file
-		elseif (substr($arg, 0, 9) == "--source=") {
+		elseif (str_starts_with($arg, "--source=")) {
 			$file = substr($arg, 9);
 
 			// Check if user passed file or route with "--source=" parameter
 			if (strlen($file) == 0){
-				error_log("Missing file in source parameter");
-				exit(10);
+				printErrorMessage("Missing file in source parameter", 10);
 			}
 		}
 		// Invalid parameter
 		else {
-			error_log("Invalid parameter");
-			exit(10);
+			printErrorMessage("Invalid parameter", 10);
 		}
 	}
 
@@ -277,8 +287,7 @@
 					generateInstructionEnd();
 				}
 				else {
-					error_log("Lexical error in instruction: DEFVAR");
-					exit(22);
+					printErrorMessage("Lexical error in instruction: DEFVAR", 22);
 				}
 				break;
 
@@ -447,8 +456,7 @@
 				$dataType = getDataType($splitted[1]);
 				$value = getDataValue($splitted[1]);
 				if ($dataType != "int" || intval($value) < 0 || intval($value) > 49) {
-					error_log("Invalid data type or int value in function: EXIT");
-					exit(57);
+					printErrorMessage("Invalid data type or int value in function: EXIT", 57);
 				}
 				generateArg(1, $dataType, $value);
 				generateInstructionEnd();
@@ -459,12 +467,14 @@
 				break;
 
 			case 'BREAK':
-				error_log("Break at line: $__LINE__, file: $__FILE__, instruction order: $instructionOrder");
+				global $__LINE__;
+				global $__FILE__;
+				global $instructionOrder;
+				error_log("Break at line: $__LINE__, file: parse.php, instruction order: $instructionOrder");
 				break;
 
 			default:
-				error_log("Lexical error, unknown command");
-				exit(22);
+				printErrorMessage("Lexical error, unknown command", 22);
 				break;
 		}
 	}

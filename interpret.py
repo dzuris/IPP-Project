@@ -10,6 +10,7 @@
 import sys
 import xml.etree.ElementTree as ET
 from enum import Enum
+import inspect
 
 # region ERROR_CODES
 NO_ERROR = 0
@@ -30,14 +31,48 @@ ERROR_INTERNAL = 99
 
 # endregion
 
-
-def print_error_message(message, error_code):
+def print_error_message(message, error_code, line):
     """
 	The function prints error message on the stderr (Standard error output)
 	@param message:		Gets message which will be printed on the stderr
 	@param error_code:	The function exits with the error code
+	@param line:        Number of the line where error occurred
 	"""
-    sys.stderr.write('ERROR: ' + message + '\n')
+    sys.stderr.write('ERROR: ')
+
+    error_title = ''
+    if error_code == ERROR_INVALID_PARAMS_COMBINATION:
+        error_title = 'InvalidParametersCombination'
+    elif error_code == ERROR_OPEN_INPUT_FILE:
+        error_title = 'OpenInputFile'
+    elif error_code == ERROR_OPEN_OUTPUT_FILE:
+        error_title = 'OpenOutputFile'
+    elif error_code == ERROR_XML_NOT_WELL_FORMED:
+        error_title = 'XmlNotWellFormed'
+    elif error_code == ERROR_XML_UNEXPECTED_STRUCTURE:
+        error_title = 'XmlUnexpectedStructure'
+    elif error_code == ERROR_SEMANTIC_CONTROL:
+        error_title = 'SemanticControl'
+    elif error_code == ERROR_WRONG_OPERANDS:
+        error_title = 'WrongOperands'
+    elif error_code == ERROR_NON_EXISTENT_VARIABLE:
+        error_title = 'NonExistentVariable'
+    elif error_code == ERROR_NON_EXISTENT_FRAME:
+        error_title = 'NonExistentFrame'
+    elif error_code == ERROR_MISSING_VALUE:
+        error_title = 'MissingValue'
+    elif error_code == ERROR_WRONG_OPERAND_VALUE:
+        error_title = 'WrongOperandValue'
+    elif error_code == ERROR_WORKING_WITH_STRING:
+        error_title = 'WorkingWithString'
+    elif error_code == ERROR_INTERNAL:
+        error_title = 'Internal'
+        
+    sys.stderr.write(error_title + '\n')
+
+    sys.stderr.write(message + '\n')
+    sys.stderr.write('FILE: ' + __file__ + '\n')
+    sys.stderr.write('LINE: ' + str(line) + '\n\n')
     exit(error_code)
 
 
@@ -115,7 +150,11 @@ class Instruction:
         self.opcode = opcode
         self.arguments = arguments
         if self.order < 1:
-            print_error_message('Invalid instruction order number', ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Invalid instruction order number',
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
 
     def get_order(self):
         """
@@ -183,11 +222,19 @@ class Variable:
             elif var_type == 'nil':
                 self.type = Type.NULL
             else:
-                print_error_message('Unknown type value: ' + var_type, ERROR_XML_UNEXPECTED_STRUCTURE)
+                print_error_message(
+                    'Unknown type value: ' + var_type,
+                    ERROR_XML_UNEXPECTED_STRUCTURE,
+                    inspect.currentframe().f_lineno
+                )
         elif type(var_type) == Type:
             self.type = var_type
         else:
-            print_error_message('Program incorrectly proceeds variable type', ERROR_INTERNAL)
+            print_error_message(
+                'Program incorrectly proceeds variable type',
+                ERROR_INTERNAL,
+                inspect.currentframe().f_lineno
+            )
 
     def set_value(self, value):
         """
@@ -200,19 +247,30 @@ class Variable:
             try:
                 self.value = int(value)
             except ValueError:
-                print_error_message('Trying assign non int value to integer', ERROR_XML_UNEXPECTED_STRUCTURE)
+                print_error_message(
+                    'Trying assign non int value to integer',
+                    ERROR_XML_UNEXPECTED_STRUCTURE,
+                    inspect.currentframe().f_lineno
+                )
         elif self.type is Type.BOOLEAN:
             if type(value) == str:
                 if value != 'true' and value != 'false':
-                    print_error_message('Wrong XML boolean notation', ERROR_XML_UNEXPECTED_STRUCTURE)
+                    print_error_message(
+                        'Wrong XML boolean notation',
+                        ERROR_XML_UNEXPECTED_STRUCTURE,
+                        inspect.currentframe().f_lineno
+                    )
                 self.value = value == 'true'
             else:
                 self.value = value is True
         elif self.type is Type.NULL:
             self.value = None
         else:
-            print_error_message('Program incorrectly processed variable\'s type\nClass Variable\nFunction set_value',
-                                ERROR_INTERNAL)
+            print_error_message(
+                'Program incorrectly processed variable\'s type\nClass Variable\nFunction set_value',
+                ERROR_INTERNAL,
+                inspect.currentframe().f_lineno
+            )
 
     def get_value(self):
         """
@@ -225,7 +283,11 @@ class Variable:
         Raises error if variable is not initialized
         """
         if self.is_init is False:
-            print_error_message('Missing value in variable: ' + self.name, ERROR_MISSING_VALUE)
+            print_error_message(
+                'Missing value in variable: ' + self.name,
+                ERROR_MISSING_VALUE,
+                inspect.currentframe().f_lineno
+            )
 
 
 class Frame:
@@ -244,7 +306,11 @@ class Frame:
         """
         for var in self.variables:
             if var.name == variable.name:
-                print_error_message('Variable redefinition: ' + variable.name, ERROR_SEMANTIC_CONTROL)
+                print_error_message(
+                    'Variable redefinition: ' + variable.name,
+                    ERROR_SEMANTIC_CONTROL,
+                    inspect.currentframe().f_lineno
+                )
 
         self.variables.append(variable)
 
@@ -277,7 +343,11 @@ class Frame:
                 return var
 
         # Raise error if variable is not in the list -> Working with undefined variable
-        print_error_message('Non existent variable: ' + var_name, ERROR_NON_EXISTENT_VARIABLE)
+        print_error_message(
+            'Non existent variable: ' + var_name,
+            ERROR_NON_EXISTENT_VARIABLE,
+            inspect.currentframe().f_lineno
+        )
 
     def update_var(self, variable: Variable):
         """
@@ -319,7 +389,11 @@ class Frames:
         @return: Local frame
         """
         if not self.local_frames:
-            print_error_message('Undefined local frame\nClass Frames\nInstruction get_lf', ERROR_NON_EXISTENT_FRAME)
+            print_error_message(
+                'Undefined local frame\nClass Frames\nInstruction get_lf',
+                ERROR_NON_EXISTENT_FRAME,
+                inspect.currentframe().f_lineno
+            )
 
         return self.local_frames[-1]
 
@@ -332,7 +406,8 @@ class Frames:
         if self.temporary_frame is None:
             print_error_message(
                 'Undefined temporary frame\nClass Frames\nInstruction get_tf',
-                ERROR_NON_EXISTENT_FRAME
+                ERROR_NON_EXISTENT_FRAME,
+                inspect.currentframe().f_lineno
             )
 
         return self.temporary_frame
@@ -356,7 +431,11 @@ class Frames:
         then pop last element from list of local frames
         """
         if not self.local_frames:
-            print_error_message('Undefined local frame\nInstruction: POPFRAME', ERROR_NON_EXISTENT_FRAME)
+            print_error_message(
+                'Undefined local frame\nInstruction: POPFRAME',
+                ERROR_NON_EXISTENT_FRAME,
+                inspect.currentframe().f_lineno
+            )
 
         self.temporary_frame = self.local_frames.pop()
 
@@ -403,7 +482,11 @@ class Stack:
             return self.list.pop()
         else:
             # Emptiness raises error
-            print_error_message('Pop from empty stack', ERROR_MISSING_VALUE)
+            print_error_message(
+                'Pop from empty stack',
+                ERROR_MISSING_VALUE,
+                inspect.currentframe().f_lineno
+            )
 
     def clear(self):
         while self.list:
@@ -423,7 +506,11 @@ def math_operation(name, operand1: Variable, operand2: Variable, operation: str)
     operand2.init_control()
     # Operation can be called only by INTs types
     if operand1.type is not Type.INT or operand2.type is not Type.INT:
-        print_error_message('Wrong type\nFunction: math_operation', ERROR_WRONG_OPERANDS)
+        print_error_message(
+            'Wrong type\nFunction: math_operation',
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
+        )
 
     # Process mathematical operation
     result = 0
@@ -441,11 +528,19 @@ def math_operation(name, operand1: Variable, operand2: Variable, operation: str)
         try:
             result = operand1.get_value() // operand2.get_value()
         except ZeroDivisionError:
-            print_error_message('Division by zero', ERROR_WRONG_OPERAND_VALUE)
+            print_error_message(
+                'Division by zero',
+                ERROR_WRONG_OPERAND_VALUE,
+                inspect.currentframe().f_lineno
+            )
 
     else:
         # Unknown operator raises error
-        print_error_message('Wrong operation\nFunction: math_operation', ERROR_INTERNAL)
+        print_error_message(
+            'Wrong operation\nFunction: math_operation',
+            ERROR_INTERNAL,
+            inspect.currentframe().f_lineno
+        )
 
     return Variable(name, Type.INT, result)
 
@@ -466,7 +561,8 @@ def vars_compare(var1, var2, operation) -> bool:
     if var1.type != var2.type:
         print_error_message(
             'Different types in comparison\nFunction: arguments_comparison',
-            ERROR_WRONG_OPERANDS
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
         )
 
     # Proceed operation between arguments
@@ -484,7 +580,11 @@ def vars_compare(var1, var2, operation) -> bool:
         return True if var1.value < var2.value else False
     else:
         # Unknown operator raises error
-        print_error_message('Unknown operator\nFunction: arguments_comparison', ERROR_INTERNAL)
+        print_error_message(
+            'Unknown operator\nFunction: arguments_comparison',
+            ERROR_INTERNAL,
+            inspect.currentframe().f_lineno
+        )
 
 
 def lt_gt_eq(name, var1: Variable, var2: Variable, op: str) -> Variable:
@@ -522,7 +622,11 @@ def and_or_not(name, var1: Variable, var2, op) -> Variable:
 
     # Checks the validity of the variable's type
     if var1.type is not Type.BOOLEAN:
-        print_error_message('Wrong operands types\nInstruction: ' + op.upper(), ERROR_WRONG_OPERANDS)
+        print_error_message(
+            'Wrong operands types\nInstruction: ' + op.upper(),
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
+        )
 
     # Performs logical operation
     if op == 'and' or op == 'or':
@@ -530,7 +634,11 @@ def and_or_not(name, var1: Variable, var2, op) -> Variable:
 
         # Checks the type of the new variable
         if var2.type is not Type.BOOLEAN:
-            print_error_message('Wrong operands types\nInstruction: ' + op.upper(), ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong operands types\nInstruction: ' + op.upper(),
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         if op == 'and':
             # AND
@@ -556,16 +664,28 @@ def int2char(name, var1: Variable) -> Variable:
 
     # Variable has to be integer
     if var1.type is not Type.INT:
-        print_error_message('Wrong operands types\nFunction: INT2CHAR', ERROR_WRONG_OPERANDS)
+        print_error_message(
+            'Wrong operands types\nFunction: INT2CHAR',
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
+        )
 
     # Transforms int to the char and catches errors TypeError and ValueError
     char = None
     try:
         char = chr(var1.value)
     except TypeError:
-        print_error_message('Wrong type input\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
+        print_error_message(
+            'Wrong type input\nInstruction: INT2CHAR',
+            ERROR_WORKING_WITH_STRING,
+            inspect.currentframe().f_lineno
+        )
     except ValueError:
-        print_error_message('Value error\nInstruction: INT2CHAR', ERROR_WORKING_WITH_STRING)
+        print_error_message(
+            'Value error\nInstruction: INT2CHAR',
+            ERROR_WORKING_WITH_STRING,
+            inspect.currentframe().f_lineno
+        )
 
     # Creates a return variable
     result_var = Variable(name, Type.STRING, char)
@@ -587,11 +707,19 @@ def stri2int(name, var_string: Variable, var_int: Variable) -> Variable:
 
     # Checks the types validity
     if var_string.type is not Type.STRING or var_int.type is not Type.INT:
-        print_error_message('Incompatible types\nFunction: STRI2INT', ERROR_WRONG_OPERANDS)
+        print_error_message(
+            'Incompatible types\nFunction: STRI2INT',
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
+        )
 
     # Checks the index validity
     if len(var_string.value) <= var_int.value:
-        print_error_message('Index outside string\nFunction: STRI2INT', ERROR_WORKING_WITH_STRING)
+        print_error_message(
+            'Index outside string\nFunction: STRI2INT',
+            ERROR_WORKING_WITH_STRING,
+            inspect.currentframe().f_lineno
+        )
 
     # Gets ordinal value of a char at the position
     result_value = ord(var_string.value[var_int.value])
@@ -628,7 +756,11 @@ class Program:
         """
         for lab in self.labels:
             if lab.name == label.name:
-                print_error_message('Label redefinition: ' + label.name, ERROR_SEMANTIC_CONTROL)
+                print_error_message(
+                    'Label redefinition: ' + label.name,
+                    ERROR_SEMANTIC_CONTROL,
+                    inspect.currentframe().f_lineno
+                )
 
         # Appending the label to the list of labels
         self.labels.append(label)
@@ -649,7 +781,11 @@ class Program:
                 return label
 
         # Label was not found in list of labels
-        print_error_message('Undefined label', ERROR_SEMANTIC_CONTROL)
+        print_error_message(
+            'Undefined label',
+            ERROR_SEMANTIC_CONTROL,
+            inspect.currentframe().f_lineno
+        )
 
     def load_labels(self):
         """
@@ -676,12 +812,20 @@ class Program:
 
         # Check OPCODE validity
         if instruction.opcode not in valid_instructions and instruction.opcode not in valid_instructions_extension:
-            print_error_message('Invalid instruction opcode: ' + instruction.opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Invalid instruction opcode: ' + instruction.opcode,
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
 
         # Check ORDER duplication validity
         for ins in self.instructions:
             if ins.order == instruction.order:
-                print_error_message('Duplicate instruction order', ERROR_XML_UNEXPECTED_STRUCTURE)
+                print_error_message(
+                    'Duplicate instruction order',
+                    ERROR_XML_UNEXPECTED_STRUCTURE,
+                    inspect.currentframe().f_lineno
+                )
 
         # Append the instruction to the list of instructions
         self.instructions.append(instruction)
@@ -717,7 +861,11 @@ class Program:
 
         # Compares the position and the list length due to the validity
         if len(instruct.arguments) <= position:
-            print_error_message('Trying to get the argument outside the list', ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Trying to get the argument outside the list',
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
 
         # Returns the argument at the position
         return instruct.arguments[position]
@@ -745,7 +893,11 @@ class Program:
             return self.frames.get_tf()
         else:
             # Unknown frame label raises error
-            print_error_message('Unknown frame opcode: ' + frame_opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Unknown frame opcode: ' + frame_opcode,
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
 
     def get_var(self, argument: Argument) -> Variable:
         """
@@ -879,7 +1031,11 @@ class Program:
             self.ins_jumpifneqs()
         else:
             # Unknown instruction raises error
-            print_error_message('Unknown instruction ' + function_opcode, ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Unknown instruction ' + function_opcode,
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
         self.iteration += 1
         self.number_of_proceeded_functions += 1
 
@@ -893,7 +1049,11 @@ class Program:
 
         # Checks the existence of the variable
         if not self.get_frame().contain_var(dest_var.name):
-            print_error_message('Attempt in working with non existent variable', ERROR_NON_EXISTENT_VARIABLE)
+            print_error_message(
+                'Attempt in working with non existent variable',
+                ERROR_NON_EXISTENT_VARIABLE,
+                inspect.currentframe().f_lineno
+            )
 
         # Gets the variable from the second argument
         var = self.get_var(self.get_argument(1))
@@ -1143,8 +1303,17 @@ class Program:
         # Destination variable
         var1 = self.get_var(self.get_argument(0))
 
-        # Gets input value and removes it from the input_lines list
-        input_value = self.input_lines[0]
+        # Gets input value and removes it from the input_lines list, if there is no input value, the program raises error
+        input_value = None
+        try:
+            input_value = self.input_lines[0]
+        except IndexError:
+            print_error_message(
+                'Trying to read from empty input file',
+                ERROR_OPEN_INPUT_FILE,
+                inspect.currentframe().f_lineno
+            )
+
         del self.input_lines[0]
 
         # New variable
@@ -1191,7 +1360,11 @@ class Program:
 
         # Checks the types of the variables
         if var1.type is not Type.STRING or var2.type is not Type.STRING:
-            print_error_message('Wrong type of the operand\nInstruction: CONCAT', ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong type of the operand\nInstruction: CONCAT',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         new_variable = Variable(
             dest_var.name,
@@ -1212,7 +1385,11 @@ class Program:
 
         # Checks type validity
         if var2.type is not Type.STRING:
-            print_error_message('Wrong operand type\nInstruction: STRLEN', ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong operand type\nInstruction: STRLEN',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         # Gets a result value
         result_value = len(var2.value)
@@ -1235,11 +1412,19 @@ class Program:
 
         # Checks the types of the variables
         if var_string.type is not Type.STRING or var_int.type is not Type.INT:
-            print_error_message('Wrong operand type\nInstruction: GETCHAR', ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong operand type\nInstruction: GETCHAR',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         # Checks index validity
         if len(var_string.value) <= var_int.value:
-            print_error_message('Index outside string\nInstruction: GETCHAR', ERROR_WORKING_WITH_STRING)
+            print_error_message(
+                'Index outside string\nInstruction: GETCHAR',
+                ERROR_WORKING_WITH_STRING,
+                inspect.currentframe().f_lineno
+            )
 
         # Gets a result value
         result_value = var_string.value[var_int.value]
@@ -1264,7 +1449,11 @@ class Program:
 
         # Checks the types of the variables
         if var_dest.type is not Type.STRING or var_int.type is not Type.INT or var_char.type is not Type.STRING:
-            print_error_message('Wrong operand type\nInstruction: SETCHAR', ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong operand type\nInstruction: SETCHAR',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         # Rewrite dest string
         s = var_dest.value
@@ -1342,11 +1531,19 @@ class Program:
 
         # Checks the type of the variable
         if var.type is not Type.INT:
-            print_error_message('Wrong operand type\nInstruction: EXIT', ERROR_WRONG_OPERANDS)
+            print_error_message(
+                'Wrong operand type\nInstruction: EXIT',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
 
         # Checks the value of the variable
         if not 0 <= var.value <= 49:
-            print_error_message('Exit code outside allowed range\nInstruction: EXIT', ERROR_WRONG_OPERAND_VALUE)
+            print_error_message(
+                'Exit code outside allowed range\nInstruction: EXIT',
+                ERROR_WRONG_OPERAND_VALUE,
+                inspect.currentframe().f_lineno
+            )
 
         # Exits program with return code
         exit(var.value)
@@ -1537,11 +1734,19 @@ def translate_to_normal_string(source_string: str):
                 num2 = source_string[index + 2]
                 num3 = source_string[index + 3]
             except IndexError:
-                print_error_message('Backslash at the end of the string', ERROR_WORKING_WITH_STRING)
+                print_error_message(
+                    'Backslash at the end of the string',
+                    ERROR_WORKING_WITH_STRING,
+                    inspect.currentframe().f_lineno
+                )
 
             # Checks if chars are numbers
             if not is_char_number(num1) or not is_char_number(num2) or not is_char_number(num3):
-                print_error_message('Char after backslash has to be number', ERROR_WORKING_WITH_STRING)
+                print_error_message(
+                    'Char after backslash has to be number',
+                    ERROR_WORKING_WITH_STRING,
+                    inspect.currentframe().f_lineno
+                )
 
             # Calculates the next three numbers after backslash
             num = 100 * int(num1) + 10 * int(num2) + int(num3)
@@ -1569,8 +1774,11 @@ def check_arguments(arguments):
         if arg == '--help':
             # Help argument
             if len(sys.argv) != 1:
-                print_error_message('--help param can\'t be used with other parameters',
-                                    ERROR_INVALID_PARAMS_COMBINATION)
+                print_error_message(
+                    '--help param can\'t be used with other parameters',
+                    ERROR_INVALID_PARAMS_COMBINATION,
+                    inspect.currentframe().f_lineno
+                )
             else:
                 print_help_message()
         elif arg[0:9] == '--source=':
@@ -1580,7 +1788,11 @@ def check_arguments(arguments):
             # Input file argument
             input_file = arg[8:]
         else:
-            print_error_message('Unknown parameter: ' + arg, ERROR_INVALID_PARAMS_COMBINATION)
+            print_error_message(
+                'Unknown parameter: ' + arg,
+                ERROR_INVALID_PARAMS_COMBINATION,
+                inspect.currentframe().f_lineno
+            )
 
     if source_file is None:
         source_file = sys.stdin
@@ -1604,12 +1816,20 @@ def load_xml(tree, program: Program):
 
     # Checks root language
     if root.attrib['language'] != 'IPPcode22':
-        print_error_message('Language of source file has to be \'IPPcode22\'', ERROR_XML_UNEXPECTED_STRUCTURE)
+        print_error_message(
+            'Language of source file has to be \'IPPcode22\'',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
 
     # Cycle through the instructions
     for instruct in root:
         if instruct.tag != 'instruction':
-            print_error_message('Unexpected element', ERROR_XML_UNEXPECTED_STRUCTURE)
+            print_error_message(
+                'Unexpected element',
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
 
         # Loads the arguments
         arguments = []
@@ -1647,11 +1867,23 @@ def main():
     try:
         tree = ET.parse(source_file)
     except FileNotFoundError:
-        print_error_message('Source file was not found\nFile name: ' + source_file, ERROR_OPEN_INPUT_FILE)
+        print_error_message(
+            'Source file was not found\nFile name: ' + source_file,
+            ERROR_OPEN_INPUT_FILE,
+            inspect.currentframe().f_lineno
+        )
     except PermissionError:
-        print_error_message('Permission denied in opening file', ERROR_OPEN_INPUT_FILE)
+        print_error_message(
+            'Permission denied in opening file',
+            ERROR_OPEN_INPUT_FILE,
+            inspect.currentframe().f_lineno
+        )
     except (ET.ParseError, OSError):
-        print_error_message('Fail in work with source_file', ERROR_OPEN_INPUT_FILE)
+        print_error_message(
+            'Fail in work with source_file',
+            ERROR_OPEN_INPUT_FILE,
+            inspect.currentframe().f_lineno
+        )
 
     # Creates new program
     my_program = Program(input_lines)

@@ -1,10 +1,12 @@
 <?php
 /**
- * @project Testing program
+ * @project Testing program for programs parse.php and interpret.py
  * @file test.php
  * @email xdzuri00@stud.fit.vutbr.cz
  * @author Adam Dzurilla
  */
+
+// TODO: ERRORS UNUSED open input and output files
 
 // ERROR CODES
 const NO_ERROR = 0;
@@ -14,16 +16,13 @@ const ERROR_OPEN_OUTPUT_FILE = 12;
 const ERROR_NON_EXISTENT_FILE_IN_PARAM = 41;    // directory, parser, interpreter, jexamxml
 const ERROR_INTERN = 99; // Internal error
 
-// GLOBAL CONSTANTS
-const TESTS_DIRECTORY = 'directoryTestsXdzuri00/';
-
 // GLOBAL FUNCTIONS
 /**
  * @param string $message Brief error message
  * @param int $error_code Error return code
  * @return void
  */
-function print_error_message(string $message,int $error_code) {
+function print_error_message(string $message,int $error_code): void {
     error_log($message);
     exit($error_code);
 }
@@ -32,7 +31,7 @@ function print_error_message(string $message,int $error_code) {
  * @brief Prints help message for the program
  * @return void
  */
-function print_help_message() {
+function print_help_message(): void {
     echo "Usage:\n";
     echo "\tphp8.1 test.php [OPTIONS]\n\n";
 
@@ -109,6 +108,9 @@ foreach ($argv as $arg) {
     }
     elseif (str_starts_with($arg, "--directory=")) {
         $arg_testDir = substr($arg, strlen("--directory="));
+        if (str_ends_with($arg_testDir, '/')) {
+            $arg_testDir = substr($arg_testDir, 0, -1);
+        }
     }
     elseif ($arg == "--recursive") {
         $arg_recursive = true;
@@ -142,6 +144,9 @@ foreach ($argv as $arg) {
     }
     elseif (str_starts_with($arg, "--jexampath=")) {
         $arg_jexampath = substr($arg, strlen("--jexampath="));
+        if (!is_dir($arg_jexampath)) {
+            print_error_message('Path jexampath is invalid', ERROR_NON_EXISTENT_FILE_IN_PARAM);
+        }
     }
     elseif ($arg == "--noclean") {
         $arg_noClean = true;
@@ -330,13 +335,13 @@ class Test {
     function generate_expand_code(string $name,string $file)
     {
         echo "\t<section>\n";
-        echo "\t\t<details class='source'>\n";
+        echo "\t\t<details>\n";
 
         echo "\t\t\t<summary>\n";
         echo "\t\t\t\t<span>".$name."</span>\n";
         echo "\t\t\t</summary>\n";
 
-        echo "\t\t\t<pre><code class='php'>\n";
+        echo "\t\t\t<pre><code class='code'>\n";
 
         $data = file_get_contents($file);
         $data = str_replace("<", "<a><</a>", $data);
@@ -449,12 +454,14 @@ function generateSideBar(array $tests) {
             text-align: center;
         }
         pre {
-            margin-left: 10px;
-            padding-left: 10px;
-            background-color: whitesmoke;
+            margin-left: 40px;
         }
         code {
-            font-family: Arial;
+            font-family: monospace;
+        }
+        details {
+            background-color: #e2e2e2;
+            padding: 10px;
         }
         a {
             font-family: sans-serif;
@@ -475,7 +482,7 @@ function generateSideBar(array $tests) {
         }
         .main {
             margin-left: 300px;
-            padding: 0px 10px;
+            padding: 10px;
         }
     </style>
 </head>
