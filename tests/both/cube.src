@@ -1,0 +1,12 @@
+.IPPCODE22
+
+DEFVAR GF@input
+READ GF@input int
+
+DEFVAR GF@square
+MUL GF@square GF@input GF@input
+
+DEFVAR GF@cube
+MUL GF@cube GF@square GF@input
+
+WRITE GF@cube

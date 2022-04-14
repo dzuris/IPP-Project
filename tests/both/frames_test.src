@@ -1,0 +1,12 @@
+.IPPcode22
+DEFVAR GF@first_Var
+CREATEFRAME
+DEFVAR TF@second_Var
+MOVE TF@second_Var bool@true
+PUSHFRAME
+MOVE GF@first_Var bool@true
+MOVE LF@second_Var bool@false
+POPFRAME
+DEFVAR TF@res
+AND TF@res TF@second_Var GF@first_Var
+WRITE TF@res

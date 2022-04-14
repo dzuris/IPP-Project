@@ -18,7 +18,7 @@ const ERROR_INTERN = 99; // Internal error
  * @param int $error_code Error return code
  * @return void
  */
-function print_error_message(string $message,int $error_code): void {
+function printErrorMessage(string $message, int $error_code): void {
     error_log($message);
     exit($error_code);
 }
@@ -27,7 +27,7 @@ function print_error_message(string $message,int $error_code): void {
  * @brief Prints help message for the program
  * @return void
  */
-function print_help_message(): void {
+function printHelpMessage(): void {
     echo "Usage:\n";
     echo "\tphp8.1 test.php [OPTIONS]\n\n";
 
@@ -59,11 +59,12 @@ function print_help_message(): void {
 }
 
 /**
+ * @brief Find if any element in array starts with $preString
  * @param string $preString expected start of the string
  * @param array $array string values
  * @return bool if some string from the array starts with pre string
  */
-function pre_string_in_array(string $preString, array $array): bool
+function preStringInArray(string $preString, array $array): bool
 {
     foreach ($array as $i) {
         if (str_starts_with($i, $preString)) {
@@ -74,26 +75,35 @@ function pre_string_in_array(string $preString, array $array): bool
     return false;
 }
 
+/**
+ * @brief Get names with paths of all the valid files
+ * @param string $dirName Directory with tests and subdirectories
+ * @return array list of files
+ */
 function getFiles(string $dirName): array {
-    global $arg_recursive;
-
+    // Check if directory exists
     if (!file_exists($dirName)) {
-        print_error_message("Fail in opening directory with tests", ERROR_NON_EXISTENT_FILE_IN_PARAM);
+        printErrorMessage("Fail in opening directory with tests", ERROR_NON_EXISTENT_FILE_IN_PARAM);
     }
 
+    // Load directory
     $content = scandir($dirName);
 
     $files = [];
     foreach ($content as $file) {
+        // Skips invalid directories
         if ($file == "." || $file == "..") {
             continue;
         }
 
-        if ($arg_recursive && is_dir($dirName.'/'.$file)) {
+        // Recursively get files from subdirectories
+        global $argRecursive;
+        if ($argRecursive && is_dir($dirName.'/'.$file)) {
             $files2 = getFiles($dirName.'/'.$file);
             $files = array_merge($files, $files2);
         }
 
+        // If extension is valid, the program adds file into list
         if (
             str_ends_with($file, ".src")
             || str_ends_with($file, ".rc")
@@ -107,22 +117,35 @@ function getFiles(string $dirName): array {
     return $files;
 }
 
+/**
+ * @brief Generates HTML sidebar with tests
+ * @param array $tests List of the tests
+ * @return void
+ */
 function generateSideBar(array $tests) {
     echo "<nav id='sidebar'>\n";
 
+    // Generates title
     echo "<h1>Tests</h1>\n";
 
     echo "<ol>\n";
 
     foreach ($tests as $test) {
+        // Skips test if there is no source file
+        if (!$test->isValid()) {
+            continue;
+        }
+
         $id = $test->getId();
         echo "<li><a style='color: ";
 
+        // Sets text color
         if ($test->getResult())
             echo "green";
         else
             echo "red";
 
+        // Generates text with id
         echo "' href='#".$id."'>".$id."</a></li>";
     }
 
@@ -131,7 +154,44 @@ function generateSideBar(array $tests) {
     echo "</nav>\n";
 }
 
+/**
+ * @brief Generates HTML table with tests summarize
+ * @param int $successfulTests Number of successful tests
+ * @param int $errorTests Number of error tests
+ * @return void
+ */
+function generateTable(int $successfulTests, int $errorTests) {
+    echo "\t<table style=\"width:100%\" id='t01'>\n";
+
+    echo "\t\t<thead>\n";
+    echo "\t\t\t<caption><h1>Results of the test.php file</h1></caption>";
+    echo "\t\t\t<tr>\n";
+    echo "\t\t\t\t<th>Type of tests</td>\n";
+    echo "\t\t\t\t<th>Count</td>\n";
+    echo "\t\t\t</tr>\n";
+    echo "\t\t</thead>\n";
+
+    echo "\t\t<tbody>\n";
+    echo "\t\t\t<tr>\n";
+    echo "\t\t\t\t<td>Successful Tests</td>\n";
+    echo "\t\t\t\t<td style='text-align: center'>".$successfulTests."</td>\n";
+    echo "\t\t\t</tr>\n";
+    echo "\t\t\t<tr>\n";
+    echo "\t\t\t\t<td>Error Tests</td>\n";
+    echo "\t\t\t\t<td style='text-align: center'>".$errorTests."</td>\n";
+    echo "\t\t\t</tr>\n";
+    echo "\t\t</tbody>\n";
+
+    echo "\t</table>\n";
+
+    echo "\t<hr/>";
+}
+
 // CLASSES
+
+/**
+ * Class test contains information about every test and functions for working with each test and generating HTML
+ */
 class Test {
     private string $path;
     private string $name;
@@ -146,7 +206,12 @@ class Test {
     private int $returnCode = 0;
     private bool $outputsIdentical;
 
-    function __construct($pathName) {
+    /**
+     * @brief Sets path and name of the test
+     * @param string $pathName Path and name of the test
+     */
+    function __construct(string $pathName) {
+        // Divides $pathName into two variables
         if ($lastBackslash = strrpos($pathName, '/')) {
             $path = substr($pathName, 0, $lastBackslash+1);
             $name = substr($pathName, $lastBackslash+1, strlen($pathName) - $lastBackslash);
@@ -160,7 +225,12 @@ class Test {
         $this->name = $name;
     }
 
-    function setFile($fileName) {
+    /**
+     * @brief Sets file in test by extension
+     * @param string $fileName File with extension
+     * @return void
+     */
+    function setFile(string $fileName) {
         if (str_ends_with($fileName, ".src"))
             $this->fileSrc = $fileName;
         elseif (str_ends_with($fileName, ".in"))
@@ -170,21 +240,46 @@ class Test {
         elseif (str_ends_with($fileName, ".rc"))
             $this->fileRc = $fileName;
         else
-            print_error_message('Unknown file: '.$fileName, ERROR_INTERN);
+            printErrorMessage('Unknown file: '.$fileName, ERROR_INTERN);
     }
 
+    /**
+     * @return bool Test validity according to source file
+     */
+    function isValid(): bool {
+        if ($this->fileSrc == false)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * @return string Concatenation of the path and the string
+     */
     function getId(): string {
         return $this->path.$this->name;
     }
 
+    /**
+     * @return bool Result if test is valid
+     */
     function getResult(): bool {
         $expectedRc = intval(file_get_contents($this->fileRc));
         $result = $this->returnCode == $expectedRc;
+
         $outputsIdentical = $this->returnCode != 0 || $this->fileOut == false || $this->outputsIdentical;
         return $result && $outputsIdentical;
     }
 
+    /**
+     * @brief Generates missing files
+     * @return void
+     */
     function generateMissingFiles() {
+        if ($this->fileSrc == false) {
+            $this->fileSrc = $this->generateFile('.src', "");
+        }
+
         if ($this->fileIn == false) {
             $this->fileIn = $this->generateFile(".in", "");
         }
@@ -194,61 +289,88 @@ class Test {
         }
     }
 
+    /**
+     * @brief test for parser
+     * @return void
+     */
     function parserTest() {
+        // Sets source file
         if ($this->fileSrc)
             $sourceParam = '<'.$this->fileSrc;
         else
             $sourceParam = '';
 
+        // Generates file for output
         $this->yourOut = $this->generateFile(".xml", "");
 
-        global $arg_parserScript;
-        $command = 'php8.1 '.$arg_parserScript.' '.$sourceParam.' >'.$this->yourOut.' 2>/dev/null';
+        // Creates command for parser test
+        global $argParserScript;
+        $command = 'php8.1 '.$argParserScript.' '.$sourceParam.' >'.$this->yourOut.' 2>/dev/null';
 
+        // Executes command
         exec($command, result_code: $this->returnCode);
     }
 
+    /**
+     * @brief test for interpreter
+     * @return void
+     */
     function interpretTest() {
+        // If parser test failed, don't do interpreter test
         if ($this->returnCode != 0)
             return;
 
+        // Sets source file for interpreter
         if ($this->yourOut == false)
             $sourceParam = '--source='.$this->fileSrc;
         else
             $sourceParam = '--source='.$this->yourOut;
 
+        // Sets input file
         $inputParam = '--input='.$this->fileIn;
 
+        // Generates temporary output file
         $outputFile = $this->generateFile("_your.out", "");
         $this->yourOut = $outputFile;
 
-        global $arg_intScript;
-        $command = 'python3.8 '.$arg_intScript.' '.$sourceParam.' '.$inputParam.' >'.$outputFile.' 2>/dev/null';
+        // Creates command for interpreter test
+        global $argIntScript;
+        $command = 'python3.8 '.$argIntScript.' '.$sourceParam.' '.$inputParam.' >'.$outputFile.' 2>/dev/null';
 
+        // Executes command
         exec($command, result_code: $this->returnCode);
     }
 
-    function setOutputsIdentical() {
+    /**
+     * @brief Checks if output files are identical
+     * @return void
+     */
+    function setOutputsIdentity() {
+        // Checks if test could be valid
         if ($this->returnCode != 0 || !$this->fileOut) {
             return;
         }
 
         $rcDiff = 0;
 
-        global $arg_parseOnly;
-        global $arg_jexampath;
-        if ($arg_parseOnly) {
+        global $argParseOnly;
+        global $argJexampath;
+        if ($argParseOnly) {
+            // If parse only argument is on, compare output files as xml-s
             $diffFile = $this->generateFile("_diff.xml", "");
-            $command = "java -jar ".$arg_jexampath."jexamxml.jar ".
-                $this->fileOut." ".$this->yourOut." ".$diffFile." /D ".$arg_jexampath."options 2>/dev/null";
+            $command = "java -jar ".$argJexampath."jexamxml.jar ".
+                $this->fileOut." ".$this->yourOut." ".$diffFile." /D ".$argJexampath."options 2>/dev/null";
         }
         else {
+            // Compare output files with 'diff' command
             $diffFile = $this->generateFile("_diff.out", "");
             $command = "diff ".$this->fileOut." ".$this->yourOut." >".$diffFile." 2>/dev/null";
         }
 
+        // Executes command
         exec($command, result_code: $rcDiff);
 
+        // Decides if outputs are identical by output code
         if ($rcDiff == 0) {
             $this->outputsIdentical = true;
         }
@@ -256,30 +378,48 @@ class Test {
             $this->outputsIdentical = false;
         }
         else {
-            print_error_message('Command for checking files identity failed', ERROR_NON_EXISTENT_FILE_IN_PARAM);
+            printErrorMessage('Command for checking files identity failed', ERROR_NON_EXISTENT_FILE_IN_PARAM);
         }
     }
 
-    function generateFile($extension, $content): string {
-        $fileName = $this->path.$this->name.$extension;
+    /**
+     * @brief Creates new file and add it to the list of files for delete
+     * @param string $extension File extension
+     * @param string $content Content of the new file
+     * @return string
+     */
+    function generateFile(string $extension, string $content): string {
+        // Creates new file name
+        $fileName = $this->getId().$extension;
 
+        // Creates new file
         file_put_contents($fileName, $content);
 
+        // Adds filename to the list for deletes
         global $filesForDelete;
         $filesForDelete[] = $fileName;
 
         return $fileName;
     }
 
+    /**
+     * @brief Prints test into HTML
+     * @return void
+     */
     function printTest() {
+        // HTML Title
         $this->generate_test_head();
 
+        // HTML test result
         $this->generate_test_result();
 
+        // HTML return codes comparison
         $this->generate_rc_text();
 
+        // HTML outputs comparison
         $this->generateDiff();
 
+        // HTML expand codes
         # region Expand codes
         if ($sourceCode = $this->fileSrc)
             $this->generate_expand_code("Source code", $sourceCode);
@@ -293,18 +433,29 @@ class Test {
         }
         # endregion
 
+        // HTML <hr>
         $this->generate_hr();
     }
 
     // region Generating HTML
+
+    /**
+     * @brief Generates test title
+     * @return void
+     */
     function generate_test_head() {
         echo "<h2><a id='".$this->path.$this->name."'>".$this->path.$this->name."</a></h2>\n";
     }
 
+    /**
+     * @brief Generates test result
+     * @return void
+     */
     function generate_test_result() {
         echo "<p class='result'>\n";
         echo "\t<a>Test result: </a>\n";
 
+        // Sets text color and prints result
         if ($this->getResult()) {
             echo "\t<a style='color: green'>\n";
             echo "\t\tSUCCESS\n";
@@ -319,12 +470,17 @@ class Test {
         echo "</p>\n";
     }
 
+    /**
+     * @brief Generates return codes comparison
+     * @return void
+     */
     function generate_rc_text() {
         $rc = $this->returnCode;
         $expectedRc = intval(file_get_contents($this->fileRc));
 
         echo "\t<p class='return_code'>\n";
 
+        // Sets text color
         if ($rc == $expectedRc) {
             echo "\t\t<a style='color: green'>\n";
         }
@@ -332,30 +488,39 @@ class Test {
             echo "\t\t<a style='color: red'>\n";
         }
 
-        echo "\t\t\t"."Return code of the test: ".$rc."\n<br>\n";
-        echo "\t\t\t"."Expected return code: ".$expectedRc."\n<br>\n";
+        // Prints text
+        echo "\t\t\t"."Return code of the test: ".$rc."<br>\n";
+        echo "\t\t\t"."Expected return code: ".$expectedRc."<br>\n";
         echo "\t\t</a>\n";
 
         echo "\t</p>\n";
     }
 
+    /**
+     * @brief Generates expand code
+     * @param string $name Name of expand code element
+     * @param string $file File with code
+     * @return void
+     */
     function generate_expand_code(string $name,string $file)
     {
         echo "\t<section>\n";
         echo "\t\t<details>\n";
 
+        // Prints title for the code
         echo "\t\t\t<summary>\n";
         echo "\t\t\t\t<span>".$name."</span>\n";
         echo "\t\t\t</summary>\n";
 
         echo "\t\t\t<pre><code class='code'>\n";
 
+        // Printing code lines
         $lineNum = 1;
         $handle = fopen($file, "r");
         if ($handle) {
             while (($line = fgets($handle)) != false) {
                 $line = str_replace('<', "<a><</a>", $line);
-                echo "<div style='background-color: lightgray; padding: 5px'>$lineNum\t$line</div>\n";
+                echo "\t\t\t\t<div style='background-color: lightgray; padding: 5px'>$lineNum\t$line</div>\n";
                 $lineNum += 1;
             }
         }
@@ -368,13 +533,19 @@ class Test {
         echo "\t</section>\n";
     }
 
+    /**
+     * @brief Generates output difference or identical outputs message
+     * @return void
+     */
     function generateDiff() {
+        // Skips if there are no files for comparison
         if ($this->returnCode != 0 || !$this->fileOut) {
             return;
         }
 
         echo "\t<p class='test_diff'>\n";
 
+        // Prints comparison result
         if ($this->outputsIdentical) {
             echo "\t\t<a style='color: green'>\n";
             echo "\t\t\tOutput files are identical\n<br>\n";
@@ -389,6 +560,10 @@ class Test {
         echo "\t</p>\n";
     }
 
+    /**
+     * @brief Generates hr
+     * @return void
+     */
     function generate_hr() {
         echo "\t<hr/>\n";
     }
@@ -400,76 +575,89 @@ class Test {
 $filesForDelete = [];
 
 // PROGRAM ARGUMENTS
-$arg_testDir = ".";
-$arg_recursive = false;
-$arg_parserScript = "parse.php";
-$arg_intScript = "interpret.py";
-$arg_parseOnly = false;
-$arg_intOnly = false;
-$arg_jexampath = "/pub/courses/ipp/jexamxml/";
-$arg_noClean = false;
+$argDirWithTests = ".";
+$argRecursive = false;
+$argParserScript = "parse.php";
+$argIntScript = "interpret.py";
+$argParseOnly = false;
+$argIntOnly = false;
+$argJexampath = "/pub/courses/ipp/jexamxml/";
+$argNoClean = false;
 
 // ARGUMENTS LOADING
 $isFirst = true;
 foreach ($argv as $arg) {
+    // Skips first argument, because it's the 'test.php'
     if ($isFirst) {
         $isFirst = false;
         continue;
     }
 
+    // Sets global argument variables
     if ($arg == "--help") {
+        // Help message
         if ($argc != 2) {
-            print_error_message("Invalid combination of the parameters", ERROR_PARAMETERS);
+            printErrorMessage("Invalid combination of the parameters", ERROR_PARAMETERS);
         }
-        print_help_message();
+
+        printHelpMessage();
     }
     elseif (str_starts_with($arg, "--directory=")) {
-        $arg_testDir = substr($arg, strlen("--directory="));
-        if (str_ends_with($arg_testDir, '/')) {
-            $arg_testDir = substr($arg_testDir, 0, -1);
+        // Sets a path to directory with tests
+        $argDirWithTests = substr($arg, strlen("--directory="));
+
+        if (str_ends_with($argDirWithTests, '/')) {
+            $argDirWithTests = substr($argDirWithTests, 0, -1);
         }
     }
     elseif ($arg == "--recursive") {
-        $arg_recursive = true;
+        // Directory with tests will be searched recursively in subdirectories
+        $argRecursive = true;
     }
     elseif (str_starts_with($arg, "--parse-script=")) {
-        $arg_parserScript = substr($arg, strlen("--parse-script="));
-        if (!file_exists($arg_parserScript))
-            print_error_message("Non existent file for parser", ERROR_NON_EXISTENT_FILE_IN_PARAM);
+        // Sets parse script
+        $argParserScript = substr($arg, strlen("--parse-script="));
+        if (!file_exists($argParserScript))
+            printErrorMessage("Non existent file for parser", ERROR_NON_EXISTENT_FILE_IN_PARAM);
     }
     elseif (str_starts_with($arg, "--int-script=")) {
-        $arg_intScript = substr($arg, strlen("--int-script="));
-        if (!file_exists($arg_intScript))
-            print_error_message("Non existent file for interpreter", ERROR_NON_EXISTENT_FILE_IN_PARAM);
+        // Sets interpreter scripts
+        $argIntScript = substr($arg, strlen("--int-script="));
+        if (!file_exists($argIntScript))
+            printErrorMessage("Non existent file for interpreter", ERROR_NON_EXISTENT_FILE_IN_PARAM);
     }
     elseif ($arg == "--parse-only") {
-        if (in_array("--int-only", $argv) || pre_string_in_array("--int-script=", $argv)) {
-            print_error_message("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
+        // The program runs only tests for parser
+        if (in_array("--int-only", $argv) || preStringInArray("--int-script=", $argv)) {
+            printErrorMessage("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
         }
-        $arg_parseOnly = true;
+        $argParseOnly = true;
     }
     elseif ($arg == "--int-only") {
+        // The program runs only tests for interpreter
         if (
                 in_array("--parse-only", $argv)
-                || pre_string_in_array("--parse-script=", $argv)
-                || pre_string_in_array("--jexampath=", $argv)
+                || preStringInArray("--parse-script=", $argv)
+                || preStringInArray("--jexampath=", $argv)
         ) {
-            print_error_message("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
+            printErrorMessage("Invalid combination of the parameter: ".$arg, ERROR_PARAMETERS);
         }
 
-        $arg_intOnly = true;
+        $argIntOnly = true;
     }
     elseif (str_starts_with($arg, "--jexampath=")) {
-        $arg_jexampath = substr($arg, strlen("--jexampath="));
+        // Path into directory with jexamxml file and options
+        $argJexampath = substr($arg, strlen("--jexampath="));
 
-        if (!str_ends_with($arg_jexampath, '/'))
-            $arg_jexampath .= '/';
+        if (!str_ends_with($argJexampath, '/'))
+            $argJexampath .= '/';
     }
     elseif ($arg == "--noclean") {
-        $arg_noClean = true;
+        // Temporary files won't be deleted
+        $argNoClean = true;
     }
     else {
-        print_error_message("Unknown parameter: ".$arg, ERROR_PARAMETERS);
+        printErrorMessage("Unknown parameter: ".$arg, ERROR_PARAMETERS);
     }
 }
 
@@ -482,6 +670,22 @@ foreach ($argv as $arg) {
     <style>
         h1 {
             text-align: center;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+        }
+        table#t01 tr:nth-child(even) {
+            background-color: #e2817b;
+        }
+        table#t01 tr:nth-child(odd) {
+            background-color: #90e27b;
+        }
+        table#t01 th {
+            color: white;
+            background-color: black;
         }
         pre {
             width: 100%;
@@ -520,13 +724,12 @@ foreach ($argv as $arg) {
     </style>
 </head>
 <body class="main">
-<h1>
-    Results of the test.php file
-</h1>
-<hr/>
 <?php
 
-$files = getFiles($arg_testDir);
+/**
+ * Gets the files for tests
+ */
+$files = getFiles($argDirWithTests);
 
 $tests = [];
 
@@ -534,8 +737,10 @@ $tests = [];
  * Transferring files into tests
  */
 foreach ($files as $file) {
+    // Gets filename without extension
     $fileName = substr($file, 0, strrpos($file, '.'));
 
+    // Checks if file is in the list, then creates new one or set it
     if (!array_key_exists($fileName, $tests))
         $test = new Test($fileName);
     else
@@ -545,16 +750,25 @@ foreach ($files as $file) {
     $tests[$fileName] = $test;
 }
 
+$successfulTests = 0;
+$errorTests = 0;
 /**
  * Works with tests
  */
 foreach ($tests as $test) {
+    // Skips test if there is no source file
+    if (!$test->isValid()) {
+        continue;
+    }
+
+    // Generate missing files .out, .in and .src
     $test->generateMissingFiles();
 
-    if ($arg_parseOnly) {
+    // Makes the tests for parse and interpret
+    if ($argParseOnly) {
         $test->parserTest();
     }
-    elseif ($arg_intOnly) {
+    elseif ($argIntOnly) {
         $test->interpretTest();
     }
     else {
@@ -562,19 +776,43 @@ foreach ($tests as $test) {
         $test->interpretTest();
     }
 
-    $test->setOutputsIdentical();
+    // Sets if output files are identical
+    $test->setOutputsIdentity();
+
+    if ($test->getResult()) {
+        $successfulTests += 1;
+    }
+    else {
+        $errorTests += 1;
+    }
 }
 
+/**
+ * Generates HTML sidebar
+ */
 generateSideBar($tests);
 
+/**
+ * Generates tests summarize
+ */
+generateTable($successfulTests, $errorTests);
+
+/**
+ * Prints the tests in HTML
+ */
 foreach ($tests as $test) {
+    // Skips test if there is no source file
+    if (!$test->isValid()) {
+        continue;
+    }
+
     $test->printTest();
 }
 
 /**
  * Cleans directory with temporary files
  */
-if (!$arg_noClean) {
+if (!$argNoClean) {
     foreach ($filesForDelete as $file) {
         shell_exec('rm '.$file);
     }

@@ -1047,22 +1047,16 @@ class Program:
         # Loads dest_var
         dest_var = self.get_var(self.get_argument(0))
 
-        # Checks the existence of the variable
-        if not self.get_frame().contain_var(dest_var.name):
-            print_error_message(
-                'Attempt in working with non existent variable',
-                ERROR_NON_EXISTENT_VARIABLE,
-                inspect.currentframe().f_lineno
-            )
-
         # Gets the variable from the second argument
         var = self.get_var(self.get_argument(1))
+
         # Control of the initialization
         var.init_control()
 
-        # Rewrites the name and then updates the variable in the frame
-        var.set_name(dest_var.name)
-        self.get_frame().update_var(var)
+        # Update variable
+        dest_var.is_init = True
+        dest_var.type = var.type
+        dest_var.value = var.value
 
     def ins_createframe(self):
         """

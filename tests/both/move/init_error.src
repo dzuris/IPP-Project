@@ -1,0 +1,8 @@
+.ippcode22
+
+DEFVAR GF@temp
+DEFVAR GF@temp2
+
+MOVE GF@temp GF@temp2
+
+WRITE GF@temp

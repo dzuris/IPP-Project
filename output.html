@@ -7,6 +7,22 @@
         h1 {
             text-align: center;
         }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+        }
+        table#t01 tr:nth-child(even) {
+            background-color: #e2817b;
+        }
+        table#t01 tr:nth-child(odd) {
+            background-color: #90e27b;
+        }
+        table#t01 th {
+            color: white;
+            background-color: black;
+        }
         pre {
             width: 100%;
             margin-left: 40px;
@@ -44,16 +60,30 @@
     </style>
 </head>
 <body class="main">
-<h1>
-    Results of the test.php file
-</h1>
-<hr/>
 <nav id='sidebar'>
 <h1>Tests</h1>
 <ol>
-<li><a style='color: green' href='#tests/int-only/stack/clears_test'>tests/int-only/stack/clears_test</a></li><li><a style='color: green' href='#tests/int-only/stack/gts_test'>tests/int-only/stack/gts_test</a></li><li><a style='color: green' href='#tests/int-only/stack/int2chars_test'>tests/int-only/stack/int2chars_test</a></li><li><a style='color: green' href='#tests/int-only/stack/jumpifeqs_test'>tests/int-only/stack/jumpifeqs_test</a></li><li><a style='color: green' href='#tests/int-only/stack/muls_test'>tests/int-only/stack/muls_test</a></li><li><a style='color: green' href='#tests/int-only/stack/nots_test'>tests/int-only/stack/nots_test</a></li><li><a style='color: green' href='#tests/int-only/stack/ors_test'>tests/int-only/stack/ors_test</a></li><li><a style='color: green' href='#tests/int-only/stack/stri2ints_test'>tests/int-only/stack/stri2ints_test</a></li><li><a style='color: red' href='#tests/int-only/stack/test1'>tests/int-only/stack/test1</a></li></ol>
+<li><a style='color: green' href='#tests/both/add/test1'>tests/both/add/test1</a></li><li><a style='color: green' href='#tests/both/big_test'>tests/both/big_test</a></li><li><a style='color: green' href='#tests/both/cube'>tests/both/cube</a></li><li><a style='color: green' href='#tests/both/error_string_out_of_range'>tests/both/error_string_out_of_range</a></li><li><a style='color: green' href='#tests/both/frames_test'>tests/both/frames_test</a></li><li><a style='color: green' href='#tests/both/move/different_types'>tests/both/move/different_types</a></li><li><a style='color: green' href='#tests/both/move/init_error'>tests/both/move/init_error</a></li><li><a style='color: green' href='#tests/both/move/test1'>tests/both/move/test1</a></li><li><a style='color: green' href='#tests/both/not_enough_read_inputs'>tests/both/not_enough_read_inputs</a></li><li><a style='color: green' href='#tests/both/read_test'>tests/both/read_test</a></li><li><a style='color: green' href='#tests/both/spec_example'>tests/both/spec_example</a></li><li><a style='color: green' href='#tests/both/square'>tests/both/square</a></li><li><a style='color: green' href='#tests/both/variable_redefinition'>tests/both/variable_redefinition</a></li></ol>
 </nav>
-<h2><a id='tests/int-only/stack/clears_test'>tests/int-only/stack/clears_test</a></h2>
+	<table style="width:100%" id='t01'>
+		<thead>
+			<caption><h1>Results of the test.php file</h1></caption>			<tr>
+				<th>Type of tests</td>
+				<th>Count</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Successful Tests</td>
+				<td style='text-align: center'>13</td>
+			</tr>
+			<tr>
+				<td>Error Tests</td>
+				<td style='text-align: center'>0</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr/><h2><a id='tests/both/add/test1'>tests/both/add/test1</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -62,78 +92,8 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 56
-<br>
-			Expected return code: 56
-<br>
-		</a>
-	</p>
-	<section>
-		<details>
-			<summary>
-				<span>Source code</span>
-			</summary>
-			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
-</div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="CLEARS test">
-</div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">10<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">5<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="CLEARS"/>
-</div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="4" opcode="DEFVAR">
-</div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19		<a><</a>instruction order="7" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>20			<a><</a>arg1 type="string">\010<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>21		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>22	<a><</a>/program></div>
-			</code></pre>
-		</details>
-	</section>
-	<hr/>
-<h2><a id='tests/int-only/stack/gts_test'>tests/int-only/stack/gts_test</a></h2>
-<p class='result'>
-	<a>Test result: </a>
-	<a style='color: green'>
-		SUCCESS
-	</a>
-</p>
-	<p class='return_code'>
-		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -148,43 +108,29 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="GTS test">
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">2<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	MOVE GF@temp int@5
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>6	DEFVAR GF@temp2
 </div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">10<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>7	MOVE GF@temp2 int@10
 </div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>8	
 </div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="GTS"/>
+				<div style='background-color: lightgray; padding: 5px'>9	DEFVAR GF@res
 </div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="4" opcode="DEFVAR">
+				<div style='background-color: lightgray; padding: 5px'>10	ADD GF@res GF@temp GF@temp2
 </div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>11	
 </div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>12	WRITE GF@res</div>
 			</code></pre>
 		</details>
 	</section>
@@ -194,7 +140,7 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	15</div>
 			</code></pre>
 		</details>
 	</section>
@@ -204,12 +150,12 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	15</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/int2chars_test'>tests/int-only/stack/int2chars_test</a></h2>
+<h2><a id='tests/both/big_test'>tests/both/big_test</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -218,83 +164,8 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
-		</a>
-	</p>
-	<section>
-		<details>
-			<summary>
-				<span>Source code</span>
-			</summary>
-			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
-</div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="INT2CHARS test">
-</div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">117<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="3" opcode="INT2CHARS"/>
-</div>
-<div style='background-color: lightgray; padding: 5px'>7		<a><</a>instruction order="4" opcode="DEFVAR">
-</div>
-<div style='background-color: lightgray; padding: 5px'>8			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="7" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="string">\010<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19	<a><</a>/program></div>
-			</code></pre>
-		</details>
-	</section>
-	<section>
-		<details>
-			<summary>
-				<span>Test output</span>
-			</summary>
-			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	u
-</div>
-			</code></pre>
-		</details>
-	</section>
-	<hr/>
-<h2><a id='tests/int-only/stack/jumpifeqs_test'>tests/int-only/stack/jumpifeqs_test</a></h2>
-<p class='result'>
-	<a>Test result: </a>
-	<a style='color: green'>
-		SUCCESS
-	</a>
-</p>
-	<p class='return_code'>
-		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -309,41 +180,162 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="JUMPIFNEQS test">
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">10<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	# Read six inputs
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>6	# 1
 </div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">1<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>7	READ GF@temp int
 </div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>8	PUSHS GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>9	    <a><</a>instruction order="3" opcode="JUMPIFEQS">
+				<div style='background-color: lightgray; padding: 5px'>9	
 </div>
-<div style='background-color: lightgray; padding: 5px'>10	        <a><</a>arg1 type="label">end<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>10	# 2
 </div>
-<div style='background-color: lightgray; padding: 5px'>11	    <a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>11	READ GF@temp int
 </div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>instruction order="6" opcode="WRITE">
+				<div style='background-color: lightgray; padding: 5px'>12	PUSHS GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>13			<a><</a>arg1 type="string">not\032jumped<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>13	
 </div>
-<div style='background-color: lightgray; padding: 5px'>14		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>14	# 3
 </div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>instruction order="7" opcode="LABEL">
+				<div style='background-color: lightgray; padding: 5px'>15	READ GF@temp int
 </div>
-<div style='background-color: lightgray; padding: 5px'>16			<a><</a>arg1 type="label">end<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>16	PUSHS GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>17		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>17	
 </div>
-<div style='background-color: lightgray; padding: 5px'>18	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>18	# 4
+</div>
+				<div style='background-color: lightgray; padding: 5px'>19	READ GF@temp int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>20	PUSHS GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>21	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>22	# 5
+</div>
+				<div style='background-color: lightgray; padding: 5px'>23	READ GF@temp int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>24	PUSHS GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>25	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>26	# 6
+</div>
+				<div style='background-color: lightgray; padding: 5px'>27	READ GF@temp int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>28	PUSHS GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>29	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>30	CREATEFRAME
+</div>
+				<div style='background-color: lightgray; padding: 5px'>31	DEFVAR TF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>32	POPS TF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>33	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>34	PUSHFRAME
+</div>
+				<div style='background-color: lightgray; padding: 5px'>35	CREATEFRAME
+</div>
+				<div style='background-color: lightgray; padding: 5px'>36	DEFVAR TF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>37	POPS TF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>38	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>39	ADD GF@temp TF@temp LF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>40	WRITE GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>41	WRITE string@\010
+</div>
+				<div style='background-color: lightgray; padding: 5px'>42	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>43	JUMPIFEQ label1 GF@temp int@51
+</div>
+				<div style='background-color: lightgray; padding: 5px'>44	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>45	WRITE string@toto\032ma\032byt\032preskocene\010
+</div>
+				<div style='background-color: lightgray; padding: 5px'>46	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>47	LABEL label1
+</div>
+				<div style='background-color: lightgray; padding: 5px'>48	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>49	WRITE string@toto\032by\032sa\032malo\032vytlacit\010
+</div>
+				<div style='background-color: lightgray; padding: 5px'>50	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>51	POPS LF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>52	POPFRAME
+</div>
+				<div style='background-color: lightgray; padding: 5px'>53	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>54	POPS GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>55	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>56	DEFVAR GF@new_var
+</div>
+				<div style='background-color: lightgray; padding: 5px'>57	MUL GF@new_var GF@temp TF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>58	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>59	WRITE GF@new_var
+</div>
+				<div style='background-color: lightgray; padding: 5px'>60	WRITE string@\010
+</div>
+				<div style='background-color: lightgray; padding: 5px'>61	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>62	POPS GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>63	POPS GF@new_var
+</div>
+				<div style='background-color: lightgray; padding: 5px'>64	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>65	DEFVAR GF@cnt
+</div>
+				<div style='background-color: lightgray; padding: 5px'>66	MOVE GF@cnt GF@new_var
+</div>
+				<div style='background-color: lightgray; padding: 5px'>67	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>68	Label start
+</div>
+				<div style='background-color: lightgray; padding: 5px'>69	JUMPIFEQ end GF@cnt int@0
+</div>
+				<div style='background-color: lightgray; padding: 5px'>70	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>71	WRITE GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>72	WRITE string@\032
+</div>
+				<div style='background-color: lightgray; padding: 5px'>73	SUB GF@temp GF@temp int@1
+</div>
+				<div style='background-color: lightgray; padding: 5px'>74	SUB GF@cnt GF@cnt int@1
+</div>
+				<div style='background-color: lightgray; padding: 5px'>75	JUMP start
+</div>
+				<div style='background-color: lightgray; padding: 5px'>76	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>77	LABEL end
+</div>
+				<div style='background-color: lightgray; padding: 5px'>78	WRITE string@\010
+</div>
 			</code></pre>
 		</details>
 	</section>
@@ -353,7 +345,14 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	not jumped</div>
+				<div style='background-color: lightgray; padding: 5px'>1	51
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	toto by sa malo vytlacit
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	1020
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	5 4 3 2 1 0 -1 -2 -3 -4 
+</div>
 			</code></pre>
 		</details>
 	</section>
@@ -363,12 +362,19 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	not jumped</div>
+				<div style='background-color: lightgray; padding: 5px'>1	51
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	toto by sa malo vytlacit
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	1020
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	5 4 3 2 1 0 -1 -2 -3 -4 
+</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/muls_test'>tests/int-only/stack/muls_test</a></h2>
+<h2><a id='tests/both/cube'>tests/both/cube</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -377,10 +383,8 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -395,43 +399,29 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPCODE22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="MULS test">
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@input
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">10<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	READ GF@input int
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>6	DEFVAR GF@square
 </div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">5<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>7	MUL GF@square GF@input GF@input
 </div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>8	
 </div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="MULS"/>
+				<div style='background-color: lightgray; padding: 5px'>9	DEFVAR GF@cube
 </div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="4" opcode="DEFVAR">
+				<div style='background-color: lightgray; padding: 5px'>10	MUL GF@cube GF@square GF@input
 </div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>11	
 </div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>12	WRITE GF@cube</div>
 			</code></pre>
 		</details>
 	</section>
@@ -441,7 +431,7 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	50</div>
+				<div style='background-color: lightgray; padding: 5px'>1	125</div>
 			</code></pre>
 		</details>
 	</section>
@@ -451,12 +441,12 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	50</div>
+				<div style='background-color: lightgray; padding: 5px'>1	125</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/nots_test'>tests/int-only/stack/nots_test</a></h2>
+<h2><a id='tests/both/error_string_out_of_range'>tests/both/error_string_out_of_range</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -465,10 +455,39 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 58<br>
+			Expected return code: 58<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPcode22
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	DEFVAR GF@a
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	# indexace mimo meze
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	GETCHAR GF@a string@a int@10
+</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/frames_test'>tests/both/frames_test</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -483,37 +502,30 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="NOTS test">
+				<div style='background-color: lightgray; padding: 5px'>2	DEFVAR GF@first_Var
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	CREATEFRAME
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="bool">true<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	DEFVAR TF@second_Var
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	MOVE TF@second_Var bool@true
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="3" opcode="NOTS"/>
+				<div style='background-color: lightgray; padding: 5px'>6	PUSHFRAME
 </div>
-<div style='background-color: lightgray; padding: 5px'>7		<a><</a>instruction order="4" opcode="DEFVAR">
+				<div style='background-color: lightgray; padding: 5px'>7	MOVE GF@first_Var bool@true
 </div>
-<div style='background-color: lightgray; padding: 5px'>8			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>8	MOVE LF@second_Var bool@false
 </div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>9	POPFRAME
 </div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="5" opcode="POPS">
+				<div style='background-color: lightgray; padding: 5px'>10	DEFVAR TF@res
 </div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>11	AND TF@res TF@second_Var GF@first_Var
 </div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>12	WRITE TF@res
 </div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16	<a><</a>/program></div>
 			</code></pre>
 		</details>
 	</section>
@@ -523,7 +535,7 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	false</div>
 			</code></pre>
 		</details>
 	</section>
@@ -533,12 +545,12 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	false</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/ors_test'>tests/int-only/stack/ors_test</a></h2>
+<h2><a id='tests/both/move/different_types'>tests/both/move/different_types</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -547,10 +559,8 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -565,43 +575,29 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="ANDS ORS test">
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="bool">false<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	MOVE GF@temp int@5
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>6	WRITE GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="bool">true<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>7	
 </div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>8	MOVE GF@temp bool@true
 </div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="ANDS"/>
+				<div style='background-color: lightgray; padding: 5px'>9	WRITE GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="4" opcode="DEFVAR">
+				<div style='background-color: lightgray; padding: 5px'>10	
 </div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>11	MOVE GF@temp string@\032text\032with\032spaces\010
 </div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>12	WRITE GF@temp</div>
 			</code></pre>
 		</details>
 	</section>
@@ -611,7 +607,8 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	5true text with spaces
+</div>
 			</code></pre>
 		</details>
 	</section>
@@ -621,12 +618,13 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	false</div>
+				<div style='background-color: lightgray; padding: 5px'>1	5true text with spaces
+</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/stri2ints_test'>tests/int-only/stack/stri2ints_test</a></h2>
+<h2><a id='tests/both/move/init_error'>tests/both/move/init_error</a></h2>
 <p class='result'>
 	<a>Test result: </a>
 	<a style='color: green'>
@@ -635,10 +633,46 @@
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 56<br>
+			Expected return code: 56<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@temp
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	DEFVAR GF@temp2
+</div>
+				<div style='background-color: lightgray; padding: 5px'>5	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>6	MOVE GF@temp GF@temp2
+</div>
+				<div style='background-color: lightgray; padding: 5px'>7	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>8	WRITE GF@temp</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/move/test1'>tests/both/move/test1</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
@@ -653,43 +687,23 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="STRI2INTS test">
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="string">auto<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	MOVE GF@temp int@5
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	
 </div>
-<div style='background-color: lightgray; padding: 5px'>6	    <a><</a>instruction order="2" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>6	DEFVAR GF@cnt
 </div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">1<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>7	MOVE GF@cnt GF@temp
 </div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>8	
 </div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="STRI2INTS"/>
-</div>
-<div style='background-color: lightgray; padding: 5px'>10		<a><</a>instruction order="4" opcode="DEFVAR">
-</div>
-<div style='background-color: lightgray; padding: 5px'>11			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>13		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>14			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>16		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>17			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>19	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>9	WRITE GF@cnt</div>
 			</code></pre>
 		</details>
 	</section>
@@ -699,7 +713,7 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	117</div>
+				<div style='background-color: lightgray; padding: 5px'>1	5</div>
 			</code></pre>
 		</details>
 	</section>
@@ -709,29 +723,63 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	117</div>
+				<div style='background-color: lightgray; padding: 5px'>1	5</div>
 			</code></pre>
 		</details>
 	</section>
 	<hr/>
-<h2><a id='tests/int-only/stack/test1'>tests/int-only/stack/test1</a></h2>
+<h2><a id='tests/both/not_enough_read_inputs'>tests/both/not_enough_read_inputs</a></h2>
 <p class='result'>
 	<a>Test result: </a>
-	<a style='color: red'>
-		FAIL
+	<a style='color: green'>
+		SUCCESS
 	</a>
 </p>
 	<p class='return_code'>
 		<a style='color: green'>
-			Return code of the test: 0
-<br>
-			Expected return code: 0
-<br>
+			Return code of the test: 11<br>
+			Expected return code: 11<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPcode22  # nacteni vstupu a vypis
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	DEFVAR GF@a
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@b
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	READ GF@a int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>5	READ GF@b int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>6	WRITE GF@a
+</div>
+				<div style='background-color: lightgray; padding: 5px'>7	WRITE bool@true # zapisujeme malými písmeny</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/read_test'>tests/both/read_test</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
 		</a>
 	</p>
 	<p class='test_diff'>
-		<a style='color: red'>
-			Output files are different
+		<a style='color: green'>
+			Output files are identical
 <br>
 		</a>
 	</p>
@@ -741,83 +789,17 @@
 				<span>Source code</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	<a><</a>?xml version="1.0" encoding="UTF-8"?>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPcode22  # nacteni vstupu a vypis
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	<a><</a>program language="IPPcode22" name="PUSHS POPS test">
+				<div style='background-color: lightgray; padding: 5px'>2	DEFVAR GF@a
 </div>
-<div style='background-color: lightgray; padding: 5px'>3		<a><</a>instruction order="1" opcode="PUSHS">
+				<div style='background-color: lightgray; padding: 5px'>3	READ GF@a int
 </div>
-<div style='background-color: lightgray; padding: 5px'>4			<a><</a>arg1 type="int">5<a><</a>/arg1>
+				<div style='background-color: lightgray; padding: 5px'>4	WRITE GF@a
 </div>
-<div style='background-color: lightgray; padding: 5px'>5		<a><</a>/instruction>
+				<div style='background-color: lightgray; padding: 5px'>5	WRITE string@\032<a><</a>not-tag/>\032 # řetězec převádíme, aby byl správně uložen do XML elementu
 </div>
-<div style='background-color: lightgray; padding: 5px'>6		<a><</a>instruction order="2" opcode="PUSHS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>7			<a><</a>arg1 type="int">10<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>8		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>9		<a><</a>instruction order="3" opcode="PUSHS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>10			<a><</a>arg1 type="int">31<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>11		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>12		<a><</a>instruction order="4" opcode="DEFVAR">
-</div>
-<div style='background-color: lightgray; padding: 5px'>13			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>14		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>15		<a><</a>instruction order="5" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>16			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>17		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>18		<a><</a>instruction order="6" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>19			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>20		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>21		<a><</a>instruction order="7" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>22			<a><</a>arg1 type="string">\010<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>23		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>24		<a><</a>instruction order="8" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>25			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>26		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>27		<a><</a>instruction order="9" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>28			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>29		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>30		<a><</a>instruction order="10" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>31			<a><</a>arg1 type="string">\010<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>32		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>33		<a><</a>instruction order="11" opcode="POPS">
-</div>
-<div style='background-color: lightgray; padding: 5px'>34			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>35		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>36		<a><</a>instruction order="12" opcode="WRITE">
-</div>
-<div style='background-color: lightgray; padding: 5px'>37			<a><</a>arg1 type="var">GF@res<a><</a>/arg1>
-</div>
-<div style='background-color: lightgray; padding: 5px'>38		<a><</a>/instruction>
-</div>
-<div style='background-color: lightgray; padding: 5px'>39	<a><</a>/program></div>
+				<div style='background-color: lightgray; padding: 5px'>6	WRITE bool@true # zapisujeme malými písmeny</div>
 			</code></pre>
 		</details>
 	</section>
@@ -827,11 +809,89 @@
 				<span>Expected output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	31
+				<div style='background-color: lightgray; padding: 5px'>1	42 <a><</a>not-tag/> true</div>
+			</code></pre>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>
+				<span>Test output</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	42 <a><</a>not-tag/> true</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/spec_example'>tests/both/spec_example</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
+		</a>
+	</p>
+	<p class='test_diff'>
+		<a style='color: green'>
+			Output files are identical
+<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPcode22
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	10
+				<div style='background-color: lightgray; padding: 5px'>2	
 </div>
-<div style='background-color: lightgray; padding: 5px'>3	5
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@counter
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	MOVE GF@counter string@  #Inicializace proměnné na prázdný řetězec
+</div>
+				<div style='background-color: lightgray; padding: 5px'>5	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>6	#Jednoduchá iterace, dokud nebude splněna zadaná podmínka
+</div>
+				<div style='background-color: lightgray; padding: 5px'>7	LABEL while
+</div>
+				<div style='background-color: lightgray; padding: 5px'>8	JUMPIFEQ end GF@counter string@aaa
+</div>
+				<div style='background-color: lightgray; padding: 5px'>9	WRITE string@Proměnná\032GF@counter\032obsahuje\032
+</div>
+				<div style='background-color: lightgray; padding: 5px'>10	WRITE GF@counter
+</div>
+				<div style='background-color: lightgray; padding: 5px'>11	WRITE string@\010
+</div>
+				<div style='background-color: lightgray; padding: 5px'>12	CONCAT GF@counter GF@counter string@a
+</div>
+				<div style='background-color: lightgray; padding: 5px'>13	JUMP while
+</div>
+				<div style='background-color: lightgray; padding: 5px'>14	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>15	LABEL end</div>
+			</code></pre>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	Proměnná GF@counter obsahuje 
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	Proměnná GF@counter obsahuje a
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	Proměnná GF@counter obsahuje aa
 </div>
 			</code></pre>
 		</details>
@@ -842,11 +902,106 @@
 				<span>Test output</span>
 			</summary>
 			<pre><code class='code'>
-<div style='background-color: lightgray; padding: 5px'>1	31
+				<div style='background-color: lightgray; padding: 5px'>1	Proměnná GF@counter obsahuje 
 </div>
-<div style='background-color: lightgray; padding: 5px'>2	10
+				<div style='background-color: lightgray; padding: 5px'>2	Proměnná GF@counter obsahuje a
 </div>
-<div style='background-color: lightgray; padding: 5px'>3	5</div>
+				<div style='background-color: lightgray; padding: 5px'>3	Proměnná GF@counter obsahuje aa
+</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/square'>tests/both/square</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 0<br>
+			Expected return code: 0<br>
+		</a>
+	</p>
+	<p class='test_diff'>
+		<a style='color: green'>
+			Output files are identical
+<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.IPPCODE22
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@input
+</div>
+				<div style='background-color: lightgray; padding: 5px'>4	READ GF@input int
+</div>
+				<div style='background-color: lightgray; padding: 5px'>5	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>6	DEFVAR GF@square
+</div>
+				<div style='background-color: lightgray; padding: 5px'>7	MUL GF@square GF@input GF@input
+</div>
+				<div style='background-color: lightgray; padding: 5px'>8	
+</div>
+				<div style='background-color: lightgray; padding: 5px'>9	WRITE GF@square</div>
+			</code></pre>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>
+				<span>Expected output</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	16</div>
+			</code></pre>
+		</details>
+	</section>
+	<section>
+		<details>
+			<summary>
+				<span>Test output</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	16</div>
+			</code></pre>
+		</details>
+	</section>
+	<hr/>
+<h2><a id='tests/both/variable_redefinition'>tests/both/variable_redefinition</a></h2>
+<p class='result'>
+	<a>Test result: </a>
+	<a style='color: green'>
+		SUCCESS
+	</a>
+</p>
+	<p class='return_code'>
+		<a style='color: green'>
+			Return code of the test: 52<br>
+			Expected return code: 52<br>
+		</a>
+	</p>
+	<section>
+		<details>
+			<summary>
+				<span>Source code</span>
+			</summary>
+			<pre><code class='code'>
+				<div style='background-color: lightgray; padding: 5px'>1	.ippcode22
+</div>
+				<div style='background-color: lightgray; padding: 5px'>2	DEFVAR GF@aa
+</div>
+				<div style='background-color: lightgray; padding: 5px'>3	DEFVAR GF@aa</div>
 			</code></pre>
 		</details>
 	</section>

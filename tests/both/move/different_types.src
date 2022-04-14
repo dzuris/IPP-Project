@@ -1,0 +1,12 @@
+.ippcode22
+
+DEFVAR GF@temp
+
+MOVE GF@temp int@5
+WRITE GF@temp
+
+MOVE GF@temp bool@true
+WRITE GF@temp
+
+MOVE GF@temp string@\032text\032with\032spaces\010
+WRITE GF@temp
