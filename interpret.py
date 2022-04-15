@@ -140,13 +140,20 @@ class Instruction:
     The instruction contains order, opcode and arguments attributes
 	"""
 
-    def __init__(self, order: int, opcode: str, arguments):
+    def __init__(self, order: str, opcode: str, arguments):
         """
         @param order: Order number
         @param opcode: Opcode of instruction
         @param arguments: List of arguments
         """
-        self.order = order
+        try:
+            self.order = int(order)
+        except ValueError:
+            print_error_message(
+                'Invalid instruction order number',
+                ERROR_XML_UNEXPECTED_STRUCTURE,
+                inspect.currentframe().f_lineno
+            )
         self.opcode = opcode
         self.arguments = arguments
         if self.order < 1:
@@ -241,8 +248,11 @@ class Variable:
         Sets value to the variable
         @param value:
         """
+        if value is None:
+            value = ''
+
         if self.type is Type.STRING:
-            self.value = str(value)
+            self.value = translate_to_normal_string(str(value))
         elif self.type is Type.INT:
             try:
                 self.value = int(value)
@@ -569,16 +579,52 @@ def vars_compare(var1, var2, operation) -> bool:
     # Proceed operation between arguments
     if operation == '==':
         # Equalisation
-        return True if var1.value == var2.value else False
-    elif operation == '!=':
+        try:
+            return True if var1.value == var2.value else False
+        except TypeError:
+            print_error_message(
+                'Type error in comparison',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
+
+    if var1.type is None or var2.type is None:
+        print_error_message(
+            'None type in comparison',
+            ERROR_WRONG_OPERANDS,
+            inspect.currentframe().f_lineno
+        )
+
+    if operation == '!=':
         # Not equalisation
-        return True if var1.value != var2.value else False
+        try:
+            return True if var1.value != var2.value else False
+        except TypeError:
+            print_error_message(
+                'Type error in comparison',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
     elif operation == '>':
         # Greater than
-        return True if var1.value > var2.value else False
+        try:
+            return True if var1.value > var2.value else False
+        except TypeError:
+            print_error_message(
+                'Type error in comparison',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
     elif operation == '<':
         # Less than
-        return True if var1.value < var2.value else False
+        try:
+            return True if var1.value < var2.value else False
+        except TypeError:
+            print_error_message(
+                'Type error in comparison',
+                ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
     else:
         # Unknown operator raises error
         print_error_message(
@@ -606,11 +652,6 @@ def lt_gt_eq(dest: Variable, var1: Variable, var2: Variable, op: str):
     dest.set_type(Type.BOOLEAN)
     dest.set_value(result_value)
     dest.is_init = True
-
-    # Creates a result variable
-    #result_var = Variable(name, Type.BOOLEAN, result_value)
-
-    #return result_var
 
 
 def and_or_not(dest: Variable, var1: Variable, var2, op):
@@ -716,7 +757,7 @@ def stri2int(dest: Variable, var_string: Variable, var_int: Variable):
         )
 
     # Checks the index validity
-    if len(var_string.value) <= var_int.value:
+    if len(var_string.value) <= var_int.value or var_int.value < 0:
         print_error_message(
             'Index outside string\nFunction: STRI2INT',
             ERROR_WORKING_WITH_STRING,
@@ -1104,7 +1145,7 @@ class Program:
         label = self.get_label(arg1.value)
 
         # Pushs incremented iteration on the stack of calls
-        self.stack_calls.push(self.iteration + 1)
+        self.stack_calls.push(self.iteration)
 
         # Jumps on label
         self.iteration = label.order - 1
@@ -1120,6 +1161,7 @@ class Program:
         Pushs the variable on the stack
         """
         var = self.get_var(self.get_argument(0))
+        var.init_control()
 
         new_var = Variable(None, var.type, var.value)
 
@@ -1304,7 +1346,7 @@ class Program:
         if var.type is Type.NULL:
             print('', end='')
         elif var.type is Type.STRING:
-            print(translate_to_normal_string(var.value), end='')
+            print(var.value, end='')
         elif var.type is Type.BOOLEAN:
             if var.value:
                 print('true', end='')
@@ -1386,7 +1428,7 @@ class Program:
             )
 
         # Checks index validity
-        if len(var_string.value) <= var_int.value:
+        if len(var_string.value) <= var_int.value or var_int.value < 0:
             print_error_message(
                 'Index outside string\nInstruction: GETCHAR',
                 ERROR_WORKING_WITH_STRING,
@@ -1394,7 +1436,7 @@ class Program:
             )
 
         # Gets a result value
-        result_value = translate_to_normal_string(var_string.value)[var_int.value]
+        result_value = var_string.value[var_int.value]
 
         # Sets destination variable
         var_dest.set_type(Type.STRING)
@@ -1422,6 +1464,13 @@ class Program:
             print_error_message(
                 'Wrong operand type\nInstruction: SETCHAR',
                 ERROR_WRONG_OPERANDS,
+                inspect.currentframe().f_lineno
+            )
+
+        if var_int.value >= len(var_dest.value) or var_int.value < 0 or len(var_char.value) < 1:
+            print_error_message(
+                'Bad index or char',
+                ERROR_WORKING_WITH_STRING,
                 inspect.currentframe().f_lineno
             )
 
@@ -1497,6 +1546,7 @@ class Program:
         Exit program with return code (first argument)
         """
         var = self.get_var(self.get_argument(0))
+        var.init_control()
 
         # Checks the type of the variable
         if var.type is not Type.INT:
@@ -1507,7 +1557,7 @@ class Program:
             )
 
         # Checks the value of the variable
-        if not 0 <= var.value <= 49:
+        if not (0 <= var.value <= 49):
             print_error_message(
                 'Exit code outside allowed range\nInstruction: EXIT',
                 ERROR_WRONG_OPERAND_VALUE,
@@ -1525,7 +1575,7 @@ class Program:
         var.init_control()
 
         if var.type is Type.STRING:
-            sys.stderr.write(str(translate_to_normal_string(var.value)) + '\n')
+            sys.stderr.write(str(var.value) + '\n')
         elif var.type is Type.INT:
             sys.stderr.write(str(var.value) + '\n')
         elif var.type is Type.BOOLEAN:
@@ -1632,7 +1682,10 @@ class Program:
         sym1 = self.stack.pop()
 
         return_var = Variable(None)
+
         and_or_not(return_var, sym1, sym2, 'or')
+
+        self.stack.push(return_var)
 
     def ins_nots(self):
         sym1 = self.stack.pop()
@@ -1796,6 +1849,48 @@ def check_arguments(arguments):
     return source_file, input_lines
 
 
+def ins_check(instruct):
+    """
+    The function checks instruction's validity
+    @param instruct: The instruction for check
+    """
+    if instruct.tag != 'instruction':
+        print_error_message(
+            'Unexpected element',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
+
+    if 'opcode' not in instruct.attrib or 'order' not in instruct.attrib:
+        print_error_message(
+            'Missing instruct attrib',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
+
+
+def arg_check(arg):
+    """
+    The function checks argument's validity
+    @param arg: The argument for check
+    """
+    if 'type' not in arg.attrib:
+        print_error_message(
+            'Unexpected element',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
+
+    allowed_types = ['label', 'var', 'type', 'string', 'int', 'bool', 'nil']
+
+    if arg.attrib['type'] not in allowed_types:
+        print_error_message(
+            'Unexpected argument type',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
+
+
 def load_xml(tree, program: Program):
     """
 	The function gets xml file and iterates through it to get the instructions and their arguments
@@ -1803,6 +1898,13 @@ def load_xml(tree, program: Program):
 	@param program:	The program class
 	"""
     root = tree.getroot()
+
+    if root.tag != 'program':
+        print_error_message(
+            'Unexpected element',
+            ERROR_XML_UNEXPECTED_STRUCTURE,
+            inspect.currentframe().f_lineno
+        )
 
     # Checks root language
     if root.attrib['language'] != 'IPPcode22':
@@ -1814,22 +1916,31 @@ def load_xml(tree, program: Program):
 
     # Cycle through the instructions
     for instruct in root:
-        if instruct.tag != 'instruction':
-            print_error_message(
-                'Unexpected element',
-                ERROR_XML_UNEXPECTED_STRUCTURE,
-                inspect.currentframe().f_lineno
-            )
+        ins_check(instruct)
 
         # Loads the arguments
         arguments = []
-        for arg in instruct:
-            arguments.append(Argument(arg.attrib['type'], arg.text))
+
+        arg1 = instruct.find('arg1')
+        arg2 = instruct.find('arg2')
+        arg3 = instruct.find('arg3')
+
+        if arg1 is not None:
+            arg_check(arg1)
+            arguments.append(Argument(arg1.attrib['type'], arg1.text))
+
+            if arg2 is not None:
+                arg_check(arg2)
+                arguments.append(Argument(arg2.attrib['type'], arg2.text))
+
+                if arg3 is not None:
+                    arg_check(arg3)
+                    arguments.append(Argument(arg3.attrib['type'], arg3.text))
 
         # Adds instructions to the program
         program.add_instruction(
             Instruction(
-                int(instruct.attrib['order']),
+                instruct.attrib['order'],
                 instruct.attrib['opcode'].upper(),
                 arguments
             )
@@ -1870,8 +1981,8 @@ def main():
         )
     except (ET.ParseError, OSError):
         print_error_message(
-            'Fail in work with source_file',
-            ERROR_OPEN_INPUT_FILE,
+            'Xml not well formed',
+            ERROR_XML_NOT_WELL_FORMED,
             inspect.currentframe().f_lineno
         )
 

@@ -357,13 +357,13 @@ class Test {
         global $argJexampath;
         if ($argParseOnly) {
             // If parse only argument is on, compare output files as xml-s
-            $diffFile = $this->generateFile("_diff.xml", "");
+            $diffFile = $this->generateFile(".diff_xml", "");
             $command = "java -jar ".$argJexampath."jexamxml.jar ".
                 $this->fileOut." ".$this->yourOut." ".$diffFile." /D ".$argJexampath."options 2>/dev/null";
         }
         else {
             // Compare output files with 'diff' command
-            $diffFile = $this->generateFile("_diff.out", "");
+            $diffFile = $this->generateFile(".diff_out", "");
             $command = "diff ".$this->fileOut." ".$this->yourOut." >".$diffFile." 2>/dev/null";
         }
 

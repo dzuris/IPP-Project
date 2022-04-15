@@ -455,9 +455,6 @@
 				generateInstructionHead($command);
 				$dataType = getDataType($splitted[1]);
 				$value = getDataValue($splitted[1]);
-				if ($dataType != "int" || intval($value) < 0 || intval($value) > 49) {
-					printErrorMessage("Invalid data type or int value in function: EXIT", 57);
-				}
 				generateArg(1, $dataType, $value);
 				generateInstructionEnd();
 				break;
