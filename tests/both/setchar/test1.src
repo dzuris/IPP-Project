@@ -1,0 +1,8 @@
+.ippcode22
+
+DEFVAR GF@word
+MOVE GF@word string@auto
+
+SETCHAR GF@word int@1 string@a
+
+WRITE GF@word

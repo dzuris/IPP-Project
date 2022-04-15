@@ -1,0 +1,78 @@
+.ippcode22
+
+DEFVAR GF@temp
+
+# Read six inputs
+# 1
+READ GF@temp int    # 10
+PUSHS GF@temp       # STACK: -> 10
+
+# 2
+READ GF@temp int    # 5
+PUSHS GF@temp       # STACK: -> 5, 10
+
+# 3
+READ GF@temp int    # 20
+PUSHS GF@temp       # STACK: -> 20, 5, 10
+
+# 4
+READ GF@temp int    # 51
+PUSHS GF@temp       # STACK: -> 51, 20, 5, 10
+
+# 5
+READ GF@temp int    # 31
+PUSHS GF@temp       # STACK: -> 31, 51, 20, 5, 10
+
+# 6
+READ GF@temp int    # 20
+PUSHS GF@temp       # STACK: -> 20, 31, 51, 20, 5, 10
+
+CREATEFRAME
+DEFVAR TF@temp
+POPS TF@temp        # 20
+
+PUSHFRAME
+CREATEFRAME
+DEFVAR TF@temp
+POPS TF@temp        # 31
+
+ADD GF@temp TF@temp LF@temp
+WRITE GF@temp
+WRITE string@\010
+
+JUMPIFEQ label1 GF@temp int@51
+
+WRITE string@toto\032ma\032byt\032preskocene\010
+
+LABEL label1
+
+WRITE string@toto\032by\032sa\032malo\032vytlacit\010
+
+POPS LF@temp
+POPFRAME
+
+POPS GF@temp
+
+DEFVAR GF@new_var
+MUL GF@new_var GF@temp TF@temp
+
+WRITE GF@new_var
+WRITE string@\010
+
+POPS GF@temp
+POPS GF@new_var
+
+DEFVAR GF@cnt
+MOVE GF@cnt GF@new_var
+
+Label start
+JUMPIFEQ end GF@cnt int@0
+
+WRITE GF@temp
+WRITE string@\032
+SUB GF@temp GF@temp int@1
+SUB GF@cnt GF@cnt int@1
+JUMP start
+
+LABEL end
+WRITE string@\010

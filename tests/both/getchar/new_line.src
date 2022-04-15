@@ -1,0 +1,14 @@
+.ippcode22
+
+DEFVAR GF@sentence
+MOVE GF@sentence string@first\010second\010
+#MOVE GF@sentence string@first\010
+
+CREATEFRAME
+DEFVAR TF@char
+GETCHAR TF@char GF@sentence int@5
+
+WRITE GF@sentence
+
+PUSHFRAME
+WRITE LF@char

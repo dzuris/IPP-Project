@@ -1,0 +1,17 @@
+.ippcode22
+
+DEFVAR GF@num1
+READ GF@num1 int
+
+DEFVAR GF@num2
+READ GF@num2 int
+
+DEFVAR GF@res
+SUB GF@res GF@num1 GF@num2
+
+WRITE GF@num1
+WRITE string@-
+WRITE GF@num2
+WRITE string@=
+WRITE GF@res
+write string@\010

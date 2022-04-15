@@ -1,0 +1,6 @@
+.IPPcode22
+DEFVAR GF@a
+# indexace mimo meze
+GETCHAR GF@a string@auto int@0
+
+WRITE GF@a

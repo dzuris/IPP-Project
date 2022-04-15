@@ -1,0 +1,14 @@
+.ippcode22
+
+DEFVAR GF@apt
+DEFVAR GF@sest
+
+MOVE GF@apt int@6
+MOVE GF@sest int@6
+
+DEFVAR GF@res
+
+MOVE GF@res string@hello
+
+EQ GF@res GF@apt GF@sest
+WRITE GF@res

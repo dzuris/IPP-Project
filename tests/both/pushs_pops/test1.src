@@ -1,0 +1,20 @@
+.ippcode22
+
+PUSHS int@5
+PUSHS int@10
+PUSHS string@hello
+
+DEFVAR GF@temp
+POPS GF@temp
+
+STRLEN GF@temp GF@temp
+WRITE GF@temp
+WRITE string@\032
+
+POPS GF@temp
+WRITE GF@temp
+WRITE string@\032
+
+POPS GF@temp
+WRITE GF@temp
+WRITE string@\010

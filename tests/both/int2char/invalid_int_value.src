@@ -1,0 +1,4 @@
+.ippcode22
+DEFVAR GF@res
+INT2CHAR GF@res int@-1
+WRITE GF@res

@@ -1,0 +1,17 @@
+.ippcode22
+
+DEFVAR GF@counter
+MOVE GF@counter int@10
+
+DEFVAR GF@num
+LABEL start
+JUMPIFEQ end GF@counter int@0
+
+READ GF@num int
+WRITE GF@num
+WRITE string@\010
+SUB GF@counter GF@counter int@1
+
+JUMP start
+
+LABEL end

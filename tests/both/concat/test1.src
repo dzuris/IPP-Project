@@ -1,0 +1,14 @@
+.IPPCODE22
+
+DEFVAR GF@word1
+DEFVAR GF@word2
+
+MOVE GF@word1 string@one
+Move GF@word2 string@two
+
+CONCAT GF@word1 GF@word2 GF@word1
+
+WRITE GF@word1
+WRITE string@\010
+WRITE GF@word2
+write string@\010

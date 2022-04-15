@@ -493,14 +493,13 @@ class Stack:
             self.pop()
 
 
-def math_operation(name, operand1: Variable, operand2: Variable, operation: str) -> Variable:
+def math_operation(dest: Variable, operand1: Variable, operand2: Variable, operation: str):
     """
     Calculates math problem
-    @param name: Name of the result variable
+    @param dest: Destination variable
     @param operand1: First operand
     @param operand2: Second operand
     @param operation: Mathematical operation
-    @return: Int variable with result
     """
     operand1.init_control()
     operand2.init_control()
@@ -542,7 +541,9 @@ def math_operation(name, operand1: Variable, operand2: Variable, operation: str)
             inspect.currentframe().f_lineno
         )
 
-    return Variable(name, Type.INT, result)
+    dest.set_type(Type.INT)
+    dest.set_value(result)
+    dest.is_init = True
 
 
 def vars_compare(var1, var2, operation) -> bool:
@@ -558,7 +559,7 @@ def vars_compare(var1, var2, operation) -> bool:
     var2.init_control()
 
     # Checks type compatibility
-    if var1.type != var2.type:
+    if var1.type != var2.type and var1.type is not Type.NULL and var2.type is not Type.NULL:
         print_error_message(
             'Different types in comparison\nFunction: arguments_comparison',
             ERROR_WRONG_OPERANDS,
@@ -587,14 +588,13 @@ def vars_compare(var1, var2, operation) -> bool:
         )
 
 
-def lt_gt_eq(name, var1: Variable, var2: Variable, op: str) -> Variable:
+def lt_gt_eq(dest: Variable, var1: Variable, var2: Variable, op: str):
     """
     Logical expression LT, GT, EQ
-    @param name:    Name of the result variable
+    @param dest:    Destination variable
     @param var1:    First variable
     @param var2:    Second variable
     @param op:      Logical operation
-    @return:        Boolean variable with result
     """
     # Initialization control
     var1.init_control()
@@ -603,20 +603,23 @@ def lt_gt_eq(name, var1: Variable, var2: Variable, op: str) -> Variable:
     # Gets a result
     result_value = True if vars_compare(var1, var2, op) else False
 
+    dest.set_type(Type.BOOLEAN)
+    dest.set_value(result_value)
+    dest.is_init = True
+
     # Creates a result variable
-    result_var = Variable(name, Type.BOOLEAN, result_value)
+    #result_var = Variable(name, Type.BOOLEAN, result_value)
 
-    return result_var
+    #return result_var
 
 
-def and_or_not(name, var1: Variable, var2, op) -> Variable:
+def and_or_not(dest: Variable, var1: Variable, var2, op):
     """
     Logical operations AND, OR, NOT
-    @param name:    Name of the result variable
+    @param dest:    Destination variable
     @param var1:    First variable
     @param var2:    Second variable or None in NOT function
     @param op:      Logical operation
-    @return:        Boolean variable with result
     """
     var1.init_control()
 
@@ -650,15 +653,16 @@ def and_or_not(name, var1: Variable, var2, op) -> Variable:
         # NOT
         result_value = not var1.value
 
-    return Variable(name, Type.BOOLEAN, result_value)
+    dest.set_type(Type.BOOLEAN)
+    dest.set_value(result_value)
+    dest.is_init = True
 
 
-def int2char(name, var1: Variable) -> Variable:
+def int2char(dest: Variable, var1: Variable):
     """
     Translates integer to char
-    @param name:    Name of the result variable
+    @param dest:    Destination variable
     @param var1:    Integer variable
-    @return:        String variable with result
     """
     var1.init_control()
 
@@ -687,19 +691,17 @@ def int2char(name, var1: Variable) -> Variable:
             inspect.currentframe().f_lineno
         )
 
-    # Creates a return variable
-    result_var = Variable(name, Type.STRING, char)
+    dest.set_type(Type.STRING)
+    dest.set_value(char)
+    dest.is_init = True
 
-    return result_var
 
-
-def stri2int(name, var_string: Variable, var_int: Variable) -> Variable:
+def stri2int(dest: Variable, var_string: Variable, var_int: Variable):
     """
     Gets ordinal value of char at the string position
-    @param name:        Name of the result variable
+    @param dest:        Destination variable
     @param var_string:  String variable
     @param var_int:     Position
-    @return:            Int variable with result
     """
     # Initialization controls
     var_string.init_control()
@@ -724,10 +726,10 @@ def stri2int(name, var_string: Variable, var_int: Variable) -> Variable:
     # Gets ordinal value of a char at the position
     result_value = ord(var_string.value[var_int.value])
 
-    # Creates a result variable
-    result_var = Variable(name, Type.INT, result_value)
-
-    return result_var
+    # Sets destination variable
+    dest.set_type(Type.INT)
+    dest.set_value(result_value)
+    dest.is_init = True
 
 
 class Program:
@@ -1117,10 +1119,11 @@ class Program:
         """
         Pushs the variable on the stack
         """
-        arg = self.get_argument(0)
+        var = self.get_var(self.get_argument(0))
 
-        var = self.get_var(arg)
-        self.stack.push(var)
+        new_var = Variable(None, var.type, var.value)
+
+        self.stack.push(new_var)
 
     def ins_pops(self):
         """
@@ -1130,13 +1133,12 @@ class Program:
         var = self.get_var(self.get_argument(0))
 
         # Gets the variable from the stack
-        var_from_stack = self.stack.pop()
+        var_from_stack: Variable = self.stack.pop()
 
-        # Rewrites its name
-        var_from_stack.set_name(var.name)
-
-        # Updates the variable on the frame
-        self.get_frame().update_var(var_from_stack)
+        # Sets destination variable
+        var.set_type(var_from_stack.type)
+        var.set_value(var_from_stack.value)
+        var.is_init = True
 
     def ins_add(self):
         """
@@ -1146,9 +1148,7 @@ class Program:
         operand1 = self.get_var(self.get_argument(1))
         operand2 = self.get_var(self.get_argument(2))
 
-        result_var = math_operation(destination.name, operand1, operand2, '+')
-
-        self.get_frame().update_var(result_var)
+        math_operation(destination, operand1, operand2, '+')
 
     def ins_sub(self):
         """
@@ -1158,9 +1158,7 @@ class Program:
         operand1 = self.get_var(self.get_argument(1))
         operand2 = self.get_var(self.get_argument(2))
 
-        result_var = math_operation(destination.name, operand1, operand2, '-')
-
-        self.get_frame().update_var(result_var)
+        math_operation(destination, operand1, operand2, '-')
 
     def ins_mul(self):
         """
@@ -1170,9 +1168,7 @@ class Program:
         operand1 = self.get_var(self.get_argument(1))
         operand2 = self.get_var(self.get_argument(2))
 
-        result_var = math_operation(destination.name, operand1, operand2, '*')
-
-        self.get_frame().update_var(result_var)
+        math_operation(destination, operand1, operand2, '*')
 
     def ins_idiv(self):
         """
@@ -1182,9 +1178,7 @@ class Program:
         operand1 = self.get_var(self.get_argument(1))
         operand2 = self.get_var(self.get_argument(2))
 
-        result_var = math_operation(destination.name, operand1, operand2, '//')
-
-        self.get_frame().update_var(result_var)
+        math_operation(destination, operand1, operand2, '//')
 
     def ins_lt(self):
         """
@@ -1195,9 +1189,7 @@ class Program:
         var1 = self.get_var(self.get_argument(1))
         var2 = self.get_var(self.get_argument(2))
 
-        result_var = lt_gt_eq(var_dest.name, var1, var2, '<')
-
-        self.get_frame().update_var(result_var)
+        lt_gt_eq(var_dest, var1, var2, '<')
 
     def ins_gt(self):
         """
@@ -1208,9 +1200,7 @@ class Program:
         var1 = self.get_var(self.get_argument(1))
         var2 = self.get_var(self.get_argument(2))
 
-        result_var = lt_gt_eq(var_dest.name, var1, var2, '>')
-
-        self.get_frame().update_var(result_var)
+        lt_gt_eq(var_dest, var1, var2, '>')
 
     def ins_eq(self):
         """
@@ -1221,9 +1211,7 @@ class Program:
         var1 = self.get_var(self.get_argument(1))
         var2 = self.get_var(self.get_argument(2))
 
-        result_var = lt_gt_eq(var_dest.name, var1, var2, '==')
-
-        self.get_frame().update_var(result_var)
+        lt_gt_eq(var_dest, var1, var2, '==')
 
     def ins_and(self):
         """
@@ -1234,9 +1222,7 @@ class Program:
         var1 = self.get_var(self.get_argument(1))
         var2 = self.get_var(self.get_argument(2))
 
-        result_var = and_or_not(var_dest.name, var1, var2, 'and')
-
-        self.get_frame().update_var(result_var)
+        and_or_not(var_dest, var1, var2, 'and')
 
     def ins_or(self):
         """
@@ -1247,9 +1233,7 @@ class Program:
         var1 = self.get_var(self.get_argument(1))
         var2 = self.get_var(self.get_argument(2))
 
-        result_var = and_or_not(var_dest.name, var1, var2, 'or')
-
-        self.get_frame().update_var(result_var)
+        and_or_not(var_dest, var1, var2, 'or')
 
     def ins_not(self):
         """
@@ -1259,9 +1243,7 @@ class Program:
 
         var1 = self.get_var(self.get_argument(1))
 
-        result_var = and_or_not(var_dest.name, var1, None, 'not')
-
-        self.get_frame().update_var(result_var)
+        and_or_not(var_dest, var1, None, 'not')
 
     def ins_int2char(self):
         """
@@ -1270,9 +1252,7 @@ class Program:
         var_dest = self.get_var(self.get_argument(0))
         var_int = self.get_var(self.get_argument(1))
 
-        result_var = int2char(var_dest.name, var_int)
-
-        self.get_frame().update_var(result_var)
+        int2char(var_dest, var_int)
 
     def ins_stri2int(self):
         """
@@ -1285,10 +1265,8 @@ class Program:
         var_string = self.get_var(self.get_argument(1))
         var_int = self.get_var(self.get_argument(2))
 
-        # Gets a variable for update
-        result_variable = stri2int(var_dest.name, var_string, var_int)
-
-        self.get_frame().update_var(result_variable)
+        # Sets destination variable
+        stri2int(var_dest, var_string, var_int)
 
     def ins_read(self):
         """
@@ -1310,14 +1288,9 @@ class Program:
 
         del self.input_lines[0]
 
-        # New variable
-        new_variable = Variable(
-            var1.name,
-            self.get_argument(1).value,
-            input_value
-        )
-
-        self.get_frame().update_var(new_variable)
+        var1.set_type(self.get_argument(1).value)
+        var1.set_value(input_value)
+        var1.is_init = True
 
     def ins_write(self):
         """
@@ -1360,13 +1333,9 @@ class Program:
                 inspect.currentframe().f_lineno
             )
 
-        new_variable = Variable(
-            dest_var.name,
-            'string',
-            var1.get_value() + var2.get_value()
-        )
-
-        self.get_frame().update_var(new_variable)
+        dest_var.is_init = True
+        dest_var.set_type(Type.STRING)
+        dest_var.value = var1.get_value() + var2.get_value()
 
     def ins_strlen(self):
         """
@@ -1388,19 +1357,23 @@ class Program:
         # Gets a result value
         result_value = len(var2.value)
 
-        # Creates a result variable
-        result_variable = Variable(var1.name, Type.INT, result_value)
-
-        self.get_frame().update_var(result_variable)
+        # Sets destination variable
+        var1.set_type(Type.INT)
+        var1.set_value(result_value)
+        var1.is_init = True
 
     def ins_getchar(self):
         """
-        Saves one char to the first argument from string (second argument) at the position (third argument)
+        Gets one char from the position
         """
-        # Loads arguments and check their validity
+        # Destination variable
         var_dest = self.get_var(self.get_argument(0))
+
+        # String
         var_string = self.get_var(self.get_argument(1))
         var_string.init_control()
+
+        # Position
         var_int = self.get_var(self.get_argument(2))
         var_int.init_control()
 
@@ -1421,23 +1394,26 @@ class Program:
             )
 
         # Gets a result value
-        result_value = var_string.value[var_int.value]
+        result_value = translate_to_normal_string(var_string.value)[var_int.value]
 
-        # Creates a result variable
-        result_variable = Variable(var_dest.name, Type.STRING, result_value)
-
-        self.get_frame().update_var(result_variable)
+        # Sets destination variable
+        var_dest.set_type(Type.STRING)
+        var_dest.set_value(result_value)
+        var_dest.is_init = True
 
     def ins_setchar(self):
         """
         Modify string (first argument) at the position (second argument) as new char (third argument)
         """
-        # Loads arguments and checks the initializations
+        # Destination variable
         var_dest = self.get_var(self.get_argument(0))
         var_dest.init_control()
 
+        # Position
         var_int = self.get_var(self.get_argument(1))
         var_int.init_control()
+
+        # Char for set
         var_char = self.get_var(self.get_argument(2))
         var_char.init_control()
 
@@ -1453,9 +1429,7 @@ class Program:
         s = var_dest.value
         pos = var_int.value
         char = var_char.value[:1]
-        var_dest.value = s[:pos] + char + s[pos+1:]
-
-        self.get_frame().update_var(var_dest)
+        var_dest.set_value(s[:pos] + char + s[pos+1:])
 
     def ins_type(self):
         """
@@ -1475,8 +1449,9 @@ class Program:
         elif var.type is Type.NULL:
             result_value = 'nil'
 
-        result_variable = Variable(var_dest.name, Type.STRING, result_value)
-        self.get_frame().update_var(result_variable)
+        var_dest.set_type(Type.STRING)
+        var_dest.set_value(result_value)
+        var_dest.is_init = True
 
     def ins_label(self):
         pass
@@ -1576,7 +1551,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = math_operation(sym1.name, sym1, sym2, '+')
+        return_var = Variable(None)
+
+        math_operation(return_var, sym1, sym2, '+')
 
         self.stack.push(return_var)
 
@@ -1584,7 +1561,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = math_operation(sym1.name, sym1, sym2, '-')
+        return_var = Variable(None)
+
+        math_operation(return_var, sym1, sym2, '-')
 
         self.stack.push(return_var)
 
@@ -1592,7 +1571,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = math_operation(sym1.name, sym1, sym2, '*')
+        return_var = Variable(None)
+
+        math_operation(return_var, sym1, sym2, '*')
 
         self.stack.push(return_var)
 
@@ -1600,7 +1581,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = math_operation(sym1.name, sym1, sym2, '//')
+        return_var = Variable(None)
+
+        math_operation(return_var, sym1, sym2, '//')
 
         self.stack.push(return_var)
 
@@ -1608,7 +1591,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = lt_gt_eq(sym1.name, sym1, sym2, '<')
+        return_var = Variable(None)
+
+        lt_gt_eq(return_var, sym1, sym2, '<')
 
         self.stack.push(return_var)
 
@@ -1616,7 +1601,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = lt_gt_eq(sym1.name, sym1, sym2, '>')
+        return_var = Variable(None)
+
+        lt_gt_eq(return_var, sym1, sym2, '>')
 
         self.stack.push(return_var)
 
@@ -1624,7 +1611,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = lt_gt_eq(sym1.name, sym1, sym2, '==')
+        return_var = Variable(None)
+
+        lt_gt_eq(return_var, sym1, sym2, '==')
 
         self.stack.push(return_var)
 
@@ -1632,7 +1621,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = and_or_not(sym1.name, sym1, sym2, 'and')
+        return_var = Variable(None)
+
+        and_or_not(return_var, sym1, sym2, 'and')
 
         self.stack.push(return_var)
 
@@ -1640,21 +1631,24 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = and_or_not(sym1.name, sym1, sym2, 'or')
-
-        self.stack.push(return_var)
+        return_var = Variable(None)
+        and_or_not(return_var, sym1, sym2, 'or')
 
     def ins_nots(self):
         sym1 = self.stack.pop()
 
-        return_var = and_or_not(sym1.name, sym1, None, 'not')
+        return_var = Variable(None)
+
+        and_or_not(return_var, sym1, None, 'not')
 
         self.stack.push(return_var)
 
     def ins_int2chars(self):
         sym1 = self.stack.pop()
 
-        return_var = int2char(sym1.name, sym1)
+        return_var = Variable(None)
+
+        int2char(return_var, sym1)
 
         self.stack.push(return_var)
 
@@ -1662,7 +1656,9 @@ class Program:
         sym2 = self.stack.pop()
         sym1 = self.stack.pop()
 
-        return_var = stri2int(sym1.name, sym1, sym2)
+        return_var = Variable(None)
+
+        stri2int(return_var, sym1, sym2)
 
         self.stack.push(return_var)
 

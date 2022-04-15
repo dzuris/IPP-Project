@@ -1,0 +1,14 @@
+.ippcode22
+DEFVAR GF@res
+INT2CHAR GF@res int@115 # s
+WRITE GF@res
+INT2CHAR GF@res int@104 # h
+WRITE GF@res
+INT2CHAR GF@res int@111 # o
+WRITE GF@res
+INT2CHAR GF@res int@117 # u
+WRITE GF@res
+INT2CHAR GF@res int@108 # l
+WRITE GF@res
+INT2CHAR GF@res int@100 # d
+WRITE GF@res

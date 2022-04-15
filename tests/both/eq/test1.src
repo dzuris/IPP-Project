@@ -1,0 +1,14 @@
+.ippcode22#test na lt
+
+DEfvAr GF@pat
+defvar GF@sest
+
+MOVE GF@pat int@5
+MOVE GF@sest int@6
+
+defvar GF@res
+
+MOVE GF@res string@hello
+
+EQ GF@res GF@pat GF@sest
+WRITE GF@res

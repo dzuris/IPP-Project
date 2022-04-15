@@ -330,7 +330,7 @@ class Test {
         $inputParam = '--input='.$this->fileIn;
 
         // Generates temporary output file
-        $outputFile = $this->generateFile("_your.out", "");
+        $outputFile = $this->generateFile(".your_out", "");
         $this->yourOut = $outputFile;
 
         // Creates command for interpreter test
@@ -750,6 +750,9 @@ foreach ($files as $file) {
     $tests[$fileName] = $test;
 }
 
+// Sorts array by key
+ksort($tests);
+
 $successfulTests = 0;
 $errorTests = 0;
 /**
@@ -779,6 +782,7 @@ foreach ($tests as $test) {
     // Sets if output files are identical
     $test->setOutputsIdentity();
 
+    // Counts successful and error number of tests
     if ($test->getResult()) {
         $successfulTests += 1;
     }
